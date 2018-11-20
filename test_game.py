@@ -5,8 +5,8 @@ from agents.random_agent import RandomAgent
 env = textworld.start("gen_games/twcc_easy_level2_gamesize1_step1_seed1_train-v0/twcc_easy_level2_gamesize1_step1_seed1_train-v0_Z9mDDVCXI9ZvioBxuXWrI9mWfxQP.ulx")
 agent = RandomAgent()
 
-max_moves = 100
-num_episodes = 10
+max_moves = 3
+num_episodes = 1
 num_moves, scores = [], []
 
 for episode in range(num_episodes):
