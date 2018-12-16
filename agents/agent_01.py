@@ -2,13 +2,13 @@ import numpy as np
 import textworld
 import random
 import string
-from representation_generator import RepresentationGenerator
+from agents.representation_generator import RepresentationGenerator
 
-class RandomAgent(textworld.Agent):
+# TODO: Add description.
+class Agent01(textworld.Agent):
 
     commands = ['go north', 'go east', 'go south', 'go west', 'take coin']
 
-    """ Agent that randomly selects commands from the admissible ones. """
     def __init__(self):
         self.rng = random.Random()
         self.representation_generator = RepresentationGenerator()

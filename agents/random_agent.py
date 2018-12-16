@@ -2,11 +2,11 @@ import numpy as np
 import textworld
 import random
 
+""" Agent that randomly selects commands. """
 class RandomAgent(textworld.Agent):
 
     commands = ['go north', 'go east', 'go south', 'go west', 'take coin']
 
-    """ Agent that randomly selects commands from the admissible ones. """
     def __init__(self):
         self.rng = random.Random()
 
