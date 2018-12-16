@@ -2,7 +2,7 @@ import numpy as np
 import textworld
 import random
 import string
-from agents.representation_generator import RepresentationGenerator
+from .representation_generator import RepresentationGenerator
 
 # TODO: Add description.
 class Agent01(textworld.Agent):
