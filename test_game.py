@@ -3,7 +3,7 @@ import numpy as np
 import textworld
 from agents.agent_01 import Agent01
 
-game_folder = "gen_games/twcc_easy_level2_gamesize10_step10_seed1_train-v0"
+game_folder = "gen_games/twcc_easy_level2_gamesize10_step1_seed1_train-v0"
 envs = []
 for filename in os.listdir(game_folder):
     if filename.endswith(".ulx"):
