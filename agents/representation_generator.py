@@ -1,6 +1,8 @@
 import string
-import numpy as np
+import torch
+import torch.nn as nn
 
+# TODO: Add description.
 class RepresentationGenerator():
 
     def __init__(self):
@@ -14,5 +16,5 @@ class RepresentationGenerator():
         words = sanitised_description.split()
 
         for word in words:
-            vec = np.zeros(len(self.all_words))
-            vec[self.all_words.index(word)] = 1
+            word_vec = torch.zeros(len(self.all_words))
+            word_vec[self.all_words.index(word)] = 1
