@@ -27,6 +27,7 @@ class RepresentationGenerator():
             self.word_to_vec[words[i]] = vec
 
 
+    # TODO: Rename.
     def split_input(self, input_string):
         
         # Initialise the hidden state.

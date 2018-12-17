@@ -11,12 +11,12 @@ for filename in os.listdir(game_folder):
 
 agent = Agent01()
 
-# max_moves = 20
-# num_episodes = 1
-# num_games = len(envs)
-max_moves = 1       # Temporary
-num_episodes = 1    # Temporary
-num_games = 1       # Temporary
+max_moves = 20
+num_episodes = 5
+num_games = len(envs)
+# max_moves = 1       # Temporary
+# num_episodes = 1    # Temporary
+# num_games = 1       # Temporary
 num_moves, scores = [], []
 
 for game in range(num_games):
