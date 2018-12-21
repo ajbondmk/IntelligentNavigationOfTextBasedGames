@@ -28,7 +28,7 @@ for game in range(num_games):
         
         reward = 0
         done = False
-        for no_step in range(max_moves):
+        for num_step in range(max_moves):
             command = agent.act(game_state, reward, done)
             game_state, reward, done = env.step(command)
             if done:
