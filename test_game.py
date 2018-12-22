@@ -37,6 +37,8 @@ for game in range(num_games):
         num_moves.append(game_state.nb_moves)
         scores.append(game_state.score)
 
+        # agent.finish(game_state, reward, done)
+
     env.close()
     print("Game {:d}/{:d} over.".format(game+1, num_games))
 
