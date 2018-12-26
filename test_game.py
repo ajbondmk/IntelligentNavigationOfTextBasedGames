@@ -3,7 +3,7 @@ import numpy as np
 import textworld
 from agents.agent_02 import Agent02
 
-game_folder = "gen_games/twcc_easy_level1_gamesize10_step1_seed1_train-v0"
+game_folder = "gen_games/twcc_easy_level2_gamesize10_step1_seed1_train-v0"
 envs = []
 for filename in os.listdir(game_folder):
     if filename.endswith(".ulx"):
@@ -26,14 +26,24 @@ for game in range(num_games):
         agent.reset(env)
         game_state = env.reset()
         
-        # reward = 0
         done = False
+        state_after = game_state.description
+        inputs_seen = [state_after]
+
         for num_step in range(max_moves):
-            # command = agent.act(game_state, reward, done)
-            command = agent.act(game_state)
-            # game_state, reward, done = env.step(command)
-            game_state, _, done = env.step(command)
-            # agent.finish_step()
+            action = agent.act(game_state)
+            game_state, coin_reward, done = env.step(action)
+            reward = coin_reward * 10
+            state_before = state_after
+            state_after = game_state.description
+            if reward is 0:
+                if state_after not in inputs_seen:
+                    reward += 1
+                    inputs_seen.append(state_after)
+            print(reward)
+            print()
+            agent.memory.add_item(state_before, action, state_after, reward)
+            agent.optimise()
             if done:
                 break
 

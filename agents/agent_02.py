@@ -6,6 +6,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from .nn_module import Model
+from collections import namedtuple
+
+
+Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
 
 # TODO: Add description.
@@ -27,10 +31,13 @@ class Agent02(textworld.Agent):
         for i in range(len(all_words)):
             self.word_to_index[all_words[i]] = i
         
-        self.model = Model(len(all_words), len(all_words), 128, len(self.commands))
+        # TODO: Investigate hyperparameters.
+        self.model = Model(len(all_words), 128, 128, len(self.commands))
+
+        self.memory = ReplayMemory(5, 3)
         
-        self.loss_function = nn.NLLLoss()
-        self.optimiser = optim.SGD(self.model.parameters(), lr=0.1)
+        # self.loss_function = nn.NLLLoss()
+        # self.optimiser = optim.Adam(self.model.parameters(), lr=0.1)
 
 
     def reset(self, env):
@@ -41,39 +48,37 @@ class Agent02(textworld.Agent):
     def act(self, game_state):
         self.model.zero_grad()
         self.model.init_hidden()
-        input = self.prepare_sequence(game_state.description)
+        input = self.prepare_input(game_state.description)
         output = self.model(input)
 
         _,b = torch.max(output[-1],0)
         command = self.commands[b]
 
         print(output[-1])
+        # self.rng = random.Random()
+        # command = self.rng.choice(self.commands)
         print(command)
-        print()
-
-        desired_output = torch.ones(8, dtype=torch.long)
-        print(output)
-        print(desired_output)
-        self.finish_step(output, desired_output)
 
         return command
 
 
-    # def finish_step(self, game_state):
-    def finish_step(self, output, desired_output):
-        loss = self.loss_function(output, desired_output)
-        loss.backward()
-        self.optimiser.step()
+    def optimise(self):
+        
+        batch = self.memory.get_batch()
+        if batch is None:
+            return
+        
+        # START HERE
+        
+
+        # self.optimiser.zero_grad()
+        # self.loss.backward()
+        # for parameter in policy_net.parameters():
+        #     parameter.grad.data.clamp_(-1, 1)
+        # self.optimiser.step()
 
 
-    # def finish_episode(self, game_state, done):
-    #     reward = 0
-    #     if done:
-    #         reward = 1
-        # self.representation_generator.?
-
-
-    def prepare_sequence(self, input_string):
+    def prepare_input(self, input_string):
         
         # Split the input description text into lowercase words with no punctuation.
         translator = str.maketrans('', '', string.punctuation)
@@ -88,3 +93,31 @@ class Agent02(textworld.Agent):
                 indices.append(self.word_to_index[word])
         
         return torch.tensor(indices, dtype=torch.long)
+
+
+
+# TODO: Put in another file?
+class ReplayMemory(object):
+
+    def __init__(self, max_length, batch_size):
+        self.max_length = max_length
+        self.batch_size = batch_size
+        self.store = []
+        self.current_position = 0
+
+    def add_item(self, *item):
+        if len(self.store) < self.max_length:
+            self.store.append(None)
+        self.store[self.current_position] = Transition(*item)
+        self.current_position = (self.current_position + 1) % self.max_length
+
+    def get_batch(self):
+        if len(self.store) < self.batch_size:
+            return None
+        return Transition(*zip(*random.sample(self.store, self.batch_size)))
+
+    # def __len__(self):
+    #     return len(self.store)
+
+    # def print(self):
+    #     print(self.store)

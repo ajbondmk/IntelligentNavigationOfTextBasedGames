@@ -10,15 +10,10 @@ class Model(nn.Module):
     # hidden_dim = size of LSTM output
     # num_commands = number of commands
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_commands):
-
         super(Model, self).__init__()
         self.hidden_dim = hidden_dim
-
         self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
-        # Could use nn.Linear with bias=False instead?
-
         self.lstm = nn.LSTM(embedding_dim, hidden_dim)
-
         self.hidden_to_commands = nn.Linear(hidden_dim, num_commands)
         self.init_hidden()
 
