@@ -27,4 +27,4 @@ class Model(nn.Module):
             embeddings.view(len(sentence), 1, -1), self.hidden)
         commands = self.hidden_to_commands(lstm_out.view(len(sentence), -1))
         # commands2 = F.log_softmax(commands, dim=1)
-        return commands
+        return commands[-1]

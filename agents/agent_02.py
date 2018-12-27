@@ -4,6 +4,7 @@ import random
 import string
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 from .nn_module import Model
 from collections import namedtuple
@@ -17,9 +18,11 @@ class Agent02(textworld.Agent):
 
 
     def __init__(self):
-        self.rng = random.Random()
 
         self.commands = ['go north', 'go east', 'go south', 'go west', 'take coin']
+        self.command_to_index = {}
+        for i in range(len(self.commands)):
+            self.command_to_index[self.commands[i]] = i
 
         # Read all possible words into an array.
         f = open('word_lists/all_words.txt', 'r')
@@ -34,10 +37,9 @@ class Agent02(textworld.Agent):
         # TODO: Investigate hyperparameters.
         self.model = Model(len(all_words), 128, 128, len(self.commands))
 
-        self.memory = ReplayMemory(5, 3)
+        self.memory = ReplayMemory(30, 5)
         
-        # self.loss_function = nn.NLLLoss()
-        # self.optimiser = optim.Adam(self.model.parameters(), lr=0.1)
+        self.optimiser = optim.RMSprop(self.model.parameters())
 
 
     def reset(self, env):
@@ -50,14 +52,14 @@ class Agent02(textworld.Agent):
         self.model.init_hidden()
         input = self.prepare_input(game_state.description)
         output = self.model(input)
-
-        _,b = torch.max(output[-1],0)
+        _,b = torch.max(output,0)
         command = self.commands[b]
 
-        print(output[-1])
-        # self.rng = random.Random()
-        # command = self.rng.choice(self.commands)
-        print(command)
+        command = random.choice(self.commands) # TEMP
+
+        print()
+        print("Output:  ", output)
+        print("Action:  ", command)
 
         return command
 
@@ -67,15 +69,44 @@ class Agent02(textworld.Agent):
         batch = self.memory.get_batch()
         if batch is None:
             return
-        
-        # START HERE
-        
 
-        # self.optimiser.zero_grad()
-        # self.loss.backward()
+        state_batch = torch.stack([self.prepare_input(s) for s in batch.state])
+        # action_batch = torch.stack([torch.tensor([self.command_to_index[a]]) for a in batch.action])
+        action_batch = [self.command_to_index[a] for a in batch.action]
+        # next_state_non_final_mask = torch.tensor(tuple(map(lambda s: s is not "", batch.next_state)), dtype=torch.uint8)
+        # next_state_non_final_batch = torch.stack([self.prepare_input(s) for s in batch.next_state if s is not ""])
+        reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
+
+        action_values = torch.zeros(self.memory.batch_size)
+        for i in range(self.memory.batch_size):
+            state = batch.state[i]
+            self.model.zero_grad()
+            self.model.init_hidden()
+            action_values[i] = self.model(self.prepare_input(state))[action_batch[i]]
+
+        next_state_values = torch.zeros(self.memory.batch_size)
+        for i in range(self.memory.batch_size):
+            next_state = batch.next_state[i]
+            if next_state is not "":
+                self.model.zero_grad()
+                self.model.init_hidden()
+                next_state_values[i] = torch.max(self.model(self.prepare_input(next_state)))
+        
+        # TODO: Choose gamma.
+        gamma = 0.1
+        expected_action_values = reward_batch + (next_state_values * gamma)
+        # print(action_values)
+        # print(expected_action_values)
+
+        loss = F.smooth_l1_loss(action_values, expected_action_values.detach())
+        print("Loss:    ", loss.item())
+
+
+        self.optimiser.zero_grad()
+        loss.backward()
         # for parameter in policy_net.parameters():
         #     parameter.grad.data.clamp_(-1, 1)
-        # self.optimiser.step()
+        self.optimiser.step()
 
 
     def prepare_input(self, input_string):

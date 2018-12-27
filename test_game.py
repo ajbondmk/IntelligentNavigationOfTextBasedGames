@@ -14,7 +14,7 @@ agent = Agent02()
 # max_moves = 20
 # num_repeats = 5
 # num_games = len(envs)
-max_moves = 5       # Temporary
+max_moves = 50       # Temporary
 num_repeats = 1    # Temporary
 num_games = 1       # Temporary
 num_moves, scores = [], []
@@ -40,8 +40,8 @@ for game in range(num_games):
                 if state_after not in inputs_seen:
                     reward += 1
                     inputs_seen.append(state_after)
-            print(reward)
-            print()
+            print("Reward:  ", reward)
+            
             agent.memory.add_item(state_before, action, state_after, reward)
             agent.optimise()
             if done:
