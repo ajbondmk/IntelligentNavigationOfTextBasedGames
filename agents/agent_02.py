@@ -19,10 +19,10 @@ class Agent02(textworld.Agent):
 
     def __init__(self):
 
-        self.commands = ['go north', 'go east', 'go south', 'go west', 'take coin']
-        self.command_to_index = {}
-        for i in range(len(self.commands)):
-            self.command_to_index[self.commands[i]] = i
+        self.actions = ['go north', 'go east', 'go south', 'go west', 'take coin']
+        self.action_to_index = {}
+        for i in range(len(self.actions)):
+            self.action_to_index[self.actions[i]] = i
 
         # Read all possible words into an array.
         f = open('word_lists/all_words.txt', 'r')
@@ -35,7 +35,7 @@ class Agent02(textworld.Agent):
             self.word_to_index[all_words[i]] = i
         
         # TODO: Investigate hyperparameters.
-        self.model = Model(len(all_words), 128, 128, len(self.commands))
+        self.model = Model(len(all_words), 128, 128, len(self.actions))
 
         self.memory = ReplayMemory(30, 5)
         
@@ -53,15 +53,15 @@ class Agent02(textworld.Agent):
         input = self.prepare_input(game_state.description)
         output = self.model(input)
         _,b = torch.max(output,0)
-        command = self.commands[b]
+        action = self.actions[b]
 
-        command = random.choice(self.commands) # TEMP
+        action = random.choice(self.actions) # TEMP
 
         print()
         print("Output:  ", output)
-        print("Action:  ", command)
+        print("Action:  ", action)
 
-        return command
+        return action
 
 
     def optimise(self):
@@ -71,8 +71,8 @@ class Agent02(textworld.Agent):
             return
 
         state_batch = torch.stack([self.prepare_input(s) for s in batch.state])
-        # action_batch = torch.stack([torch.tensor([self.command_to_index[a]]) for a in batch.action])
-        action_batch = [self.command_to_index[a] for a in batch.action]
+        # action_batch = torch.stack([torch.tensor([self.action_to_index[a]]) for a in batch.action])
+        action_batch = [self.action_to_index[a] for a in batch.action]
         # next_state_non_final_mask = torch.tensor(tuple(map(lambda s: s is not "", batch.next_state)), dtype=torch.uint8)
         # next_state_non_final_batch = torch.stack([self.prepare_input(s) for s in batch.next_state if s is not ""])
         reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])

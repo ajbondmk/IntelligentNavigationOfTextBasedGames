@@ -8,13 +8,13 @@ class Model(nn.Module):
     # vocab_size = number of possible words
     # embedding_dim = word embedding vector size
     # hidden_dim = size of LSTM output
-    # num_commands = number of commands
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_commands):
+    # num_actions = number of actions
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_actions):
         super(Model, self).__init__()
         self.hidden_dim = hidden_dim
         self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim)
-        self.hidden_to_commands = nn.Linear(hidden_dim, num_commands)
+        self.hidden_to_actions = nn.Linear(hidden_dim, num_actions)
         self.init_hidden()
 
     def init_hidden(self):
@@ -25,6 +25,6 @@ class Model(nn.Module):
         embeddings = self.word_embeddings(sentence)
         lstm_out, self.hidden = self.lstm(
             embeddings.view(len(sentence), 1, -1), self.hidden)
-        commands = self.hidden_to_commands(lstm_out.view(len(sentence), -1))
-        # commands2 = F.log_softmax(commands, dim=1)
-        return commands[-1]
+        actions = self.hidden_to_actions(lstm_out.view(len(sentence), -1))
+        # actions2 = F.log_softmax(actions, dim=1)
+        return actions[-1]
