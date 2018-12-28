@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import textworld
-from agents.agent_02 import Agent02
+from agent_02 import Agent02
 from debug_print import debug_print
 from debug_print import debug_not_print
 
