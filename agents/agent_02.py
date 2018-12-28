@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from .nn_module import Model
 from .replay_memory import ReplayMemory
-from .debug_print import debug_print
+from debug_print import debug_print
 
 
 # TODO: Add description.

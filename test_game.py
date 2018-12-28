@@ -2,8 +2,8 @@ import os
 import numpy as np
 import textworld
 from agents.agent_02 import Agent02
-from agents.debug_print import debug_print
-from agents.debug_print import debug_not_print
+from debug_print import debug_print
+from debug_print import debug_not_print
 
 world_folder = "gen_games/twcc_easy_level3_gamesize10_step1_seed1_train-v0"
 envs = []
