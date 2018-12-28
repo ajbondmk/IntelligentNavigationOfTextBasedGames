@@ -2,6 +2,10 @@ import os
 import numpy as np
 import textworld
 from agents.agent_02 import Agent02
+from agents.debug_print import debug_print
+from agents.debug_print import debug_not_print
+
+DEBUG = True
 
 game_folder = "gen_games/twcc_easy_level3_gamesize10_step1_seed1_train-v0"
 envs = []
@@ -22,8 +26,8 @@ for episode in range(num_repeats):
 
         env = textworld.start(game_folder + "/" + envs[game])
         
-        # print()
-        # print("Game {:d}/{:d} - Episode {:d}/{:d}".format(game, num_games-1, episode, num_repeats-1))
+        debug_print()
+        debug_print("Game {:d}/{:d} - Episode {:d}/{:d}".format(game, num_games-1, episode, num_repeats-1))
         
         agent.reset(env)
         game_state = env.reset()
@@ -42,7 +46,7 @@ for episode in range(num_repeats):
                 if state_after not in inputs_seen:
                     reward += 1
                     inputs_seen.append(state_after)
-            # print("Reward:  ", reward)
+            debug_print("Reward:   {:d}".format(reward))
             
             agent.memory.add_item(state_before, action, state_after, reward)
             agent.optimise()
@@ -50,10 +54,10 @@ for episode in range(num_repeats):
                 break
 
         num_moves.append(game_state.nb_moves)
-        print("Game {:d}/{:d} - Episode {:d}/{:d} - Moves {:d}".format(game, num_games-1, episode, num_repeats-1, game_state.nb_moves))
+        debug_not_print("Game {:d}/{:d} - Episode {:d}/{:d} - Moves {:d}".format(game, num_games-1, episode, num_repeats-1, game_state.nb_moves))
         scores.append(game_state.score)
 
-        # print()
+        debug_print()
 
         env.close()
 

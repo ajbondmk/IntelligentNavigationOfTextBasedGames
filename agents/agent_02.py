@@ -7,10 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from .nn_module import Model
-from collections import namedtuple
-
-
-Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
+from .replay_memory import ReplayMemory
+from .debug_print import debug_print
 
 
 # TODO: Add description.
@@ -50,24 +48,24 @@ class Agent02(textworld.Agent):
         env.activate_state_tracking()
         env.compute_intermediate_reward()
         self.current_count = self.current_count + 1
+        self.epsilon = (self.total_count - self.current_count) / self.total_count
+        debug_print("Epsilon:  {:f}".format(self.epsilon))
 
 
     def act(self, game_state):
 
-        # print()
-        epsilon = (self.total_count - self.current_count) / self.total_count
-        # print("Epsilon: ", epsilon)
-        if random.random() > epsilon:
+        debug_print()
+        if random.random() > self.epsilon:
             self.model.zero_grad()
             self.model.init_hidden()
             input = self.prepare_input(game_state.description)
             output = self.model(input)
             _,b = torch.max(output,0)
             action = self.actions[b]
-            # print("Output:  ", output)
+            debug_print("Output:   [{:s}]".format(", ".join(str(i) for i in output.tolist())))
         else:
             action = random.choice(self.actions)
-        # print("Action:  ", action)
+        debug_print("Action:   {:s}".format(action))
         return action
 
 
@@ -100,7 +98,7 @@ class Agent02(textworld.Agent):
         expected_action_values = reward_batch + (next_state_values * gamma)
 
         loss = self.loss_criterion(action_values, expected_action_values.detach())
-        # print("Loss:    ", loss.item())
+        debug_print("Loss:     {:f}".format(loss.item()))
 
         self.optimiser.zero_grad()
         loss.backward()
@@ -122,31 +120,3 @@ class Agent02(textworld.Agent):
                 indices.append(self.word_to_index[word])
         
         return torch.tensor(indices, dtype=torch.long)
-
-
-
-# TODO: Put in another file?
-class ReplayMemory(object):
-
-    def __init__(self, max_length, batch_size):
-        self.max_length = max_length
-        self.batch_size = batch_size
-        self.store = []
-        self.current_position = 0
-
-    def add_item(self, *item):
-        if len(self.store) < self.max_length:
-            self.store.append(None)
-        self.store[self.current_position] = Transition(*item)
-        self.current_position = (self.current_position + 1) % self.max_length
-
-    def get_batch(self):
-        if len(self.store) < self.batch_size:
-            return None
-        return Transition(*zip(*random.sample(self.store, self.batch_size)))
-
-    # def __len__(self):
-    #     return len(self.store)
-
-    # def print(self):
-    #     print(self.store)
