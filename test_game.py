@@ -3,26 +3,28 @@ import numpy as np
 import textworld
 from agents.agent_02 import Agent02
 
-game_folder = "gen_games/twcc_easy_level2_gamesize10_step1_seed1_train-v0"
+game_folder = "gen_games/twcc_easy_level3_gamesize10_step1_seed1_train-v0"
 envs = []
 for filename in os.listdir(game_folder):
     if filename.endswith(".ulx"):
         envs.append(filename)
 
-agent = Agent02()
-
-# max_moves = 20
-# num_repeats = 5
-# num_games = len(envs)
-max_moves = 50       # Temporary
-num_repeats = 1    # Temporary
-num_games = 1       # Temporary
+max_moves = 50
+num_games = len(envs)
+num_repeats = 10
 num_moves, scores = [], []
 
-for game in range(num_games):
-    env = textworld.start(game_folder + "/" + envs[game])
-    
-    for episode in range(num_repeats):
+agent = Agent02(num_games * num_repeats)
+
+for episode in range(num_repeats):
+
+    for game in range(num_games):
+
+        env = textworld.start(game_folder + "/" + envs[game])
+        
+        # print()
+        # print("Game {:d}/{:d} - Episode {:d}/{:d}".format(game, num_games-1, episode, num_repeats-1))
+        
         agent.reset(env)
         game_state = env.reset()
         
@@ -40,7 +42,7 @@ for game in range(num_games):
                 if state_after not in inputs_seen:
                     reward += 1
                     inputs_seen.append(state_after)
-            print("Reward:  ", reward)
+            # print("Reward:  ", reward)
             
             agent.memory.add_item(state_before, action, state_after, reward)
             agent.optimise()
@@ -48,12 +50,12 @@ for game in range(num_games):
                 break
 
         num_moves.append(game_state.nb_moves)
+        print("Game {:d}/{:d} - Episode {:d}/{:d} - Moves {:d}".format(game, num_games-1, episode, num_repeats-1, game_state.nb_moves))
         scores.append(game_state.score)
 
-        # agent.finish_episode(game_state, done)
+        # print()
 
-    env.close()
-    print("Game {:d}/{:d} over.".format(game+1, num_games))
+        env.close()
 
 print()
 print("Moves:", *num_moves)

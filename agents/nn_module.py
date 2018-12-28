@@ -26,5 +26,4 @@ class Model(nn.Module):
         lstm_out, self.hidden = self.lstm(
             embeddings.view(len(sentence), 1, -1), self.hidden)
         actions = self.hidden_to_actions(lstm_out.view(len(sentence), -1))
-        # actions2 = F.log_softmax(actions, dim=1)
         return actions[-1]
