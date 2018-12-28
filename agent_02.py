@@ -43,7 +43,8 @@ class Agent02(textworld.Agent):
         # Create a memory for transitions.
         self.memory = ReplayMemory(100, 20)
         
-        # TODO: Add comment.
+        # Create a criterion for calculating loss and an optimiser for training the model.
+        # TODO: What is a criterion?
         self.loss_criterion = nn.MSELoss()
         self.optimiser = optim.RMSprop(self.model.parameters())
 
@@ -55,7 +56,7 @@ class Agent02(textworld.Agent):
     def reset(self, env):
         """ Reset the agent (should be used before starting a new game). """
 
-        # TODO: What is this?
+        # TODO: This activates state tracking (to find valid commands) and enables intermediate reward computation (to detect if a game is lost). Are either of these necessary?
         env.activate_state_tracking()
         env.compute_intermediate_reward()
 

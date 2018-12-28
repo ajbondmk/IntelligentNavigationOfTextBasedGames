@@ -13,7 +13,7 @@ class RandomAgent(textworld.Agent):
 
     def reset(self, env):
         """ Reset the agent (should be used before starting a new game). """
-        # TODO: What is this?
+        # TODO: This activates state tracking (to find valid commands) and enables intermediate reward computation (to detect if a game is lost). Are either of these necessary?
         env.activate_state_tracking()
         env.compute_intermediate_reward()
 
