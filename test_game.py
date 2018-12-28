@@ -5,11 +5,9 @@ from agents.agent_02 import Agent02
 from agents.debug_print import debug_print
 from agents.debug_print import debug_not_print
 
-DEBUG = True
-
-game_folder = "gen_games/twcc_easy_level3_gamesize10_step1_seed1_train-v0"
+world_folder = "gen_games/twcc_easy_level3_gamesize10_step1_seed1_train-v0"
 envs = []
-for filename in os.listdir(game_folder):
+for filename in os.listdir(world_folder):
     if filename.endswith(".ulx"):
         envs.append(filename)
 
@@ -24,7 +22,7 @@ for episode in range(num_repeats):
 
     for game in range(num_games):
 
-        env = textworld.start(game_folder + "/" + envs[game])
+        env = textworld.start(world_folder + "/" + envs[game])
         
         debug_print()
         debug_print("Game {:d}/{:d} - Episode {:d}/{:d}".format(game, num_games-1, episode, num_repeats-1))

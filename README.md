@@ -3,19 +3,19 @@
 
 ## Generating Games
 
-To generate a game, run a command matching the following format:
+To generate a world (a set of games), run a command matching the following format:
 
 `tw-make.py twcc_(easy|medium|hard)_level(\d+)_gamesize(\d+)_step(\d+)_seed(\d+)_(train|validation|test)`
 
 where:
 - `mode` is easy if there are no distractor nodes and hard if there are a lot.
-- `level` is the number of steps needed to solve each map.
-- `gamesize` is the number of maps.
+- `level` is the number of steps needed to solve each game.
+- `gamesize` is the number of games in the world.
 - `step` is ???.
 - `seed` is the random seed.
-- `split` determines which group of data these maps belong to.
+- `split` determines which group of data these games belong to.
 
-Then edit the `game_folder` variable in file `test_game.py` to point to the new game folder (which can likely be found in the `gen_games` folder). Note that the `gen_games` folder already contains games of all three modes for levels 1-3, where each game contains 10 maps.
+Then edit the `world_folder` variable in file `test_game.py` to point to the new world folder (which can likely be found in the `gen_games` folder). Note that the `gen_games` folder already contains worlds of all three modes for levels 1-3, where each world contains 10 games.
 
 
 ## Selecting an Agent
