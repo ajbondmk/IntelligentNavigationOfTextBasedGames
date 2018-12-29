@@ -15,7 +15,7 @@ where:
 - `seed` is the random seed.
 - `split` determines which group of data these games belong to.
 
-Then edit the `world_folder` variable in file `test_game.py` to point to the new world folder (which can likely be found in the `gen_games` folder). Note that the `gen_games` folder already contains worlds of all three modes for levels 1-3, where each world contains 10 games.
+The new world folder will likely be located in a folder named `gen_games`.
 
 
 ## Agents
@@ -27,11 +27,10 @@ Then edit the `world_folder` variable in file `test_game.py` to point to the new
 
 ## Training and Testing
 
-To test `RandomAgent`, navigate into `my_code` and run `python3 test_random_agent.py`.
+A script which tests `RandomAgent` can be found in `my_code/main_random_agent.py`.
 
-To train `Agent02`, navigate into `my_code` and run `python3 train_agent_02.py`.
+A script which trains and tests `Agent02` can be found in `my_code/main_agent_02.py`.
 
+The parameters `max_moves` and `num_episodes` can be edited in these files. For `RandomAgent`, the parameter `world_folder` can be set; for `Agent02`, the parameters `train_world_folder` and `test_world_folder` can bbe set.
 
-## Debug Print Statements
-
-To provide a more verbose terminal output, open the file `debug_print.py` and `DEBUG` to `True`. For a less verbose output, set it to `False`.
+To provide a more verbose terminal output, open the file `debug_print.py` and set `DEBUG` to `True`. For a less verbose output, set it to `False`.
