@@ -34,9 +34,9 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
     # Number of games in the world.
     num_games = len(envs)
 
-    # Initialise the arrays of move counts and scores.
-    num_moves, scores = [], []
-    # TODO: Remove for random?
+    if not is_random_agent:
+        # Initialise the arrays of move counts and scores.
+        num_moves, scores = [], []
 
     # Repeat each game multiple times.
     for episode in range(num_episodes):

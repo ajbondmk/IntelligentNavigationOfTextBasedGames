@@ -36,7 +36,7 @@ class Agent02(textworld.Agent):
         for i in range(len(all_words)):
             self.word_to_index[all_words[i]] = i
         
-        # TODO: Investigate hyperparameters.
+        # TODO: Choose hyperparameters.
         # Create a neural network model.
         self.model = Model(len(all_words), 128, 128, len(self.actions))
 
@@ -44,7 +44,6 @@ class Agent02(textworld.Agent):
         self.memory = ReplayMemory(100, 20)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
-        # TODO: What is a criterion?
         self.loss_criterion = nn.MSELoss()
         self.optimiser = optim.RMSprop(self.model.parameters())
 
