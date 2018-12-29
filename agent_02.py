@@ -15,7 +15,7 @@ class Agent02(textworld.Agent):
     """ Agent that uses an epsilon-greedy policy and a neural network model to select actions. """
 
 
-    def __init__(self, total_count):
+    def __init__(self):
         """ Initialise the agent. """
 
         # Create a list of possible actions.
@@ -48,21 +48,13 @@ class Agent02(textworld.Agent):
         self.loss_criterion = nn.MSELoss()
         self.optimiser = optim.RMSprop(self.model.parameters())
 
-        # Initialise the values needed to vary epsilon linearly over all games.
-        self.total_count = total_count - 1
-        self.current_count = -1
+        # Initialise epsilon.
+        self.epsilon = 0.1
 
 
-    def reset(self, env):
-        """ Reset the agent (should be used before starting a new game). """
-
-        # TODO: This activates state tracking (to find valid commands) and enables intermediate reward computation (to detect if a game is lost). Are either of these necessary?
-        env.activate_state_tracking()
-        env.compute_intermediate_reward()
-
-        # Update epsilon value. Epsilon begins at 1 for the first game and decreases linearly to end at 0 on the last game.
-        self.current_count = self.current_count + 1
-        self.epsilon = (self.total_count - self.current_count) / self.total_count
+    def set_epsilon(self, epsilon):
+        """ Set the value of epsilon, which controls how likely the agent is to choose a random action. """
+        self.epsilon = epsilon
         debug_print("Epsilon:  {:f}".format(self.epsilon))
 
 
@@ -85,7 +77,6 @@ class Agent02(textworld.Agent):
         else:
             action = random.choice(self.actions)
         
-        debug_print("Action:   {:s}".format(action))
         return action
 
 
