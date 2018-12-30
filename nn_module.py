@@ -32,8 +32,7 @@ class Model(nn.Module):
     def forward(self, sentence):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(sentence)
-        # TODO: Research following 3 lines.
-        lstm_out, self.hidden = self.lstm(
-            embeddings.view(len(sentence), 1, -1), self.hidden)
+        # TODO: Investigate the following 2 lines.
+        lstm_out, self.hidden = self.lstm(embeddings.view(len(sentence), 1, -1), self.hidden)
         actions = self.hidden_to_actions(lstm_out.view(len(sentence), -1))
         return actions[-1]
