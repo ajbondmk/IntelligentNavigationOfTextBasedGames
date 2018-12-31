@@ -4,7 +4,7 @@ import textworld
 from debug_print import debug_print, debug_not_print
 
 
-def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_episodes):
+def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_epochs):
     """
     Runs an agent on all games in a world.
 
@@ -14,7 +14,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
         agent - the agent being run
         world_folder - the folder for the world containing games to run the agent on
         max_moves - the maximum number of moves taken before the game is failed
-        num_episodes - the number of times each game is played
+        num_epochs - the number of times each game is played
     """
 
     print()
@@ -38,7 +38,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
     num_moves, scores = [], []
 
     # Repeat each game multiple times.
-    for episode in range(num_episodes):
+    for epoch in range(num_epochs):
 
         # Run each game in the world.
         for game in range(num_games):
@@ -47,7 +47,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             env = textworld.start(world_folder + "/" + envs[game])
             
             debug_print()
-            debug_print("Game {:d}/{:d} - Episode {:d}/{:d}".format(game+1, num_games, episode+1, num_episodes))
+            debug_print("Game {:d}/{:d} - Epoch {:d}/{:d}".format(game+1, num_games, epoch+1, num_epochs))
             
             # Reset the agent and environment.
             game_state = env.reset()
@@ -55,10 +55,10 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             if is_training:
 
                 # Update epsilon.
-                if num_episodes * num_games == 1:
+                if num_epochs * num_games == 1:
                     agent.set_epsilon(1)
                 else:
-                    agent.set_epsilon(1 - (1 - 0.02) * ((episode * (game + 1) + game) / (num_episodes * num_games - 1)))
+                    agent.set_epsilon(1 - (1 - 0.02) * ((epoch * (game + 1) + game) / (num_epochs * num_games - 1)))
 
                 # Initialise the list of room descriptions seen so far.
                 state_after = game_state.description
@@ -98,7 +98,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
 
             # Keep track of the latest statistics.
             num_moves.append(game_state.nb_moves)
-            debug_not_print("Game {:d}/{:d} - Episode {:d}/{:d} - Moves {:d}".format(game+1, num_games, episode+1, num_episodes, game_state.nb_moves))
+            debug_not_print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, num_epochs, game_state.nb_moves))
             scores.append(game_state.score)
 
             debug_print()
@@ -123,10 +123,10 @@ def extract_games(world_folder):
 
 
 def test_random_agent(agent, world_folder, max_moves):
-    run_agent(False, True, agent, world_folder, max_moves, num_episodes=1)
+    run_agent(False, True, agent, world_folder, max_moves, num_epochs=1)
 
-def train_agent_02(agent, world_folder, max_moves, num_episodes):
-    run_agent(True, False, agent, world_folder, max_moves, num_episodes)
+def train_agent_02(agent, world_folder, max_moves, num_epochs):
+    run_agent(True, False, agent, world_folder, max_moves, num_epochs)
 
 def test_agent_02(agent, world_folder, max_moves):
-    run_agent(False, False, agent, world_folder, max_moves, num_episodes=1)
+    run_agent(False, False, agent, world_folder, max_moves, num_epochs=1)
