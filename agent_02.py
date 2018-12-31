@@ -36,13 +36,11 @@ class Agent02(textworld.Agent):
         for i in range(len(all_words)):
             self.word_to_index[all_words[i]] = i
         
-        # TODO: Choose hyperparameters.
         # Create a neural network model.
-        self.model = Model(len(all_words), 128, 128, len(self.actions))
+        self.model = Model(len(all_words), 16, 64, len(self.actions))
 
-        # TODO: Choose memory and batch size.
         # Create a memory for transitions.
-        self.memory = ReplayMemory(100, 20)
+        self.memory = ReplayMemory(500000, 8)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()
@@ -87,7 +85,6 @@ class Agent02(textworld.Agent):
         batch = self.memory.get_batch()
         if batch is None:
             return
-
         # Create a list of actions and a tensor of rewards.
         action_batch = [self.action_to_index[a] for a in batch.action]
         reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
@@ -110,8 +107,7 @@ class Agent02(textworld.Agent):
                 next_state_values[i] = torch.max(self.model(self.prepare_input(next_state)))
         
         # Calculate the expected action values for each transition.
-        # TODO: Choose gamma.
-        gamma = 0.1
+        gamma = 0.9
         expected_action_values = reward_batch + (next_state_values * gamma)
 
         # Calculate loss and optimise the model accordingly.

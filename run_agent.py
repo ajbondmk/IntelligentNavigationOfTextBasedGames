@@ -34,9 +34,8 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
     # Number of games in the world.
     num_games = len(envs)
 
-    if not is_random_agent:
-        # Initialise the arrays of move counts and scores.
-        num_moves, scores = [], []
+    # Initialise the arrays of move counts and scores.
+    num_moves, scores = [], []
 
     # Repeat each game multiple times.
     for episode in range(num_episodes):
@@ -59,7 +58,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                 if num_episodes * num_games == 1:
                     agent.set_epsilon(1)
                 else:
-                    agent.set_epsilon(1 - (1 - 0.01) * ((episode * (game + 1) + game) / (num_episodes * num_games - 1)))
+                    agent.set_epsilon(1 - (1 - 0.02) * ((episode * (game + 1) + game) / (num_episodes * num_games - 1)))
 
                 # Initialise the list of room descriptions seen so far.
                 state_after = game_state.description
@@ -123,11 +122,11 @@ def extract_games(world_folder):
     return envs
 
 
-def test_random_agent(agent, world_folder, max_moves, num_episodes):
-    run_agent(False, True, agent, world_folder, max_moves, num_episodes)
+def test_random_agent(agent, world_folder, max_moves):
+    run_agent(False, True, agent, world_folder, max_moves, num_episodes=1)
 
 def train_agent_02(agent, world_folder, max_moves, num_episodes):
     run_agent(True, False, agent, world_folder, max_moves, num_episodes)
 
-def test_agent_02(agent, world_folder, max_moves, num_episodes):
-    run_agent(False, False, agent, world_folder, max_moves, num_episodes)
+def test_agent_02(agent, world_folder, max_moves):
+    run_agent(False, False, agent, world_folder, max_moves, num_episodes=1)
