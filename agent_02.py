@@ -40,6 +40,7 @@ class Agent02(textworld.Agent):
         # Set the number of words to be input into the model for each input string.
         # If the actual number of words is smaller, all-zero padding will be added.
         # If the actual number of words is larger, the extra words will be ignored.
+        # Note: Longest observed sequence had length 41.
         self.num_input_words = 50
         
         # Create a neural network model.
