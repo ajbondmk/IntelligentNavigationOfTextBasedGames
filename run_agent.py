@@ -4,7 +4,7 @@ import textworld
 from debug_print import debug_print, debug_not_print
 
 
-def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_epochs):
+def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_epochs, num_games):
     """
     Runs an agent on all games in a world.
 
@@ -15,6 +15,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
         world_folder - the folder for the world containing games to run the agent on
         max_moves - the maximum number of moves taken before the game is failed
         num_epochs - the number of times each game is played
+        num_games = number of games from the world_folder which should be played (0 indicates all)
     """
 
     print()
@@ -24,15 +25,18 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
         print("TESTING")
     print()
 
+    epsilon_lower_bound = 0.2
+
     if not is_random_agent and not is_training:
         # Set the value of epsilon for testing.
-        agent.set_epsilon(0.1)
+        agent.set_epsilon(epsilon_lower_bound)
 
     # Find all games in the chosen world.
     envs = extract_games(world_folder)
     
     # Number of games in the world.
-    num_games = len(envs)
+    if num_games == 0 or num_games > len(envs):
+        num_games = len(envs)
 
     # Initialise the arrays of move counts and scores.
     num_moves, scores = [], []
@@ -58,7 +62,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                 if num_epochs * num_games == 1:
                     agent.set_epsilon(1)
                 else:
-                    agent.set_epsilon(1 - (1 - 0.02) * ((epoch * (game + 1) + game) / (num_epochs * num_games - 1)))
+                    agent.set_epsilon(1 - (1 - epsilon_lower_bound) * ((epoch * (game + 1) + game) / (num_epochs * num_games - 1)))
 
                 # Initialise the list of room descriptions seen so far.
                 state_after = game_state.description
@@ -122,11 +126,11 @@ def extract_games(world_folder):
     return envs
 
 
-def test_random_agent(agent, world_folder, max_moves):
-    run_agent(False, True, agent, world_folder, max_moves, num_epochs=1)
+def test_random_agent(agent, world_folder, max_moves, num_games = 0):
+    run_agent(False, True, agent, world_folder, max_moves, 1, num_games)
 
-def train_agent_02(agent, world_folder, max_moves, num_epochs):
-    run_agent(True, False, agent, world_folder, max_moves, num_epochs)
+def train_agent_02(agent, world_folder, max_moves, num_epochs, num_games=0):
+    run_agent(True, False, agent, world_folder, max_moves, num_epochs, num_games)
 
-def test_agent_02(agent, world_folder, max_moves):
-    run_agent(False, False, agent, world_folder, max_moves, num_epochs=1)
+def test_agent_02(agent, world_folder, max_moves, num_games=0):
+    run_agent(False, False, agent, world_folder, max_moves, 1, num_games)

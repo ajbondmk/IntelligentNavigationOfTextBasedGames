@@ -9,6 +9,7 @@ import torch.optim as optim
 from nn_module import Model
 from replay_memory import ReplayMemory
 from debug_print import debug_print
+import sys
 
 
 class Agent02(textworld.Agent):
@@ -35,12 +36,17 @@ class Agent02(textworld.Agent):
         self.word_to_index = {}
         for i in range(len(all_words)):
             self.word_to_index[all_words[i]] = i
+
+        # Set the number of words to be input into the model for each input string.
+        # If the actual number of words is smaller, all-zero padding will be added.
+        # If the actual number of words is larger, the extra words will be ignored.
+        self.num_input_words = 50
         
         # Create a neural network model.
-        self.model = Model(len(all_words), 16, 64, len(self.actions))
+        self.model = Model(len(all_words), self.num_input_words, 16, 64, len(self.actions))
 
         # Create a memory for transitions.
-        self.memory = ReplayMemory(500000, 8)
+        self.memory = ReplayMemory(500000, 20)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()
@@ -65,8 +71,8 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.zero_grad()
             self.model.init_hidden()
-            input = self.prepare_input(game_state.description)
-            output = self.model(input)
+            input = self.encode_inputs([game_state.description])
+            output = self.model(input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
             debug_print("Output:   [{:s}]".format(", ".join(str(i) for i in output.tolist())))
@@ -85,26 +91,24 @@ class Agent02(textworld.Agent):
         batch = self.memory.get_batch()
         if batch is None:
             return
-        # Create a list of actions and a tensor of rewards.
+        
+        # Create a list of actions for the batch.
         action_batch = [self.action_to_index[a] for a in batch.action]
+
+        # Create a tensor of rewards for the batch.
         reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
 
-        # Calculate the value predicted by the model for the action taken in each transition.
-        action_values = torch.zeros(self.memory.batch_size)
-        for i in range(self.memory.batch_size):
-            state = batch.state[i]
-            self.model.zero_grad()
-            self.model.init_hidden()
-            action_values[i] = self.model(self.prepare_input(state))[action_batch[i]]
+        # Calculate the value predicted by the model for each transition in the batch.
+        self.model.zero_grad()
+        self.model.init_hidden()
+        all_action_values = self.model(self.encode_inputs(batch.state))
+        action_values = torch.stack([all_action_values[i,action_batch[i]] for i in range(len(all_action_values))])
 
-        # Calculate the maximum value predicted by the model for an action taken in the next state of each transition.
+        # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
+        non_final_next_state_mask = torch.tensor(tuple(map(lambda s: s is not "", batch.next_state)), dtype=torch.uint8)
+        non_final_next_state_values = self.model(self.encode_inputs([s for s in batch.next_state if s is not ""]))
         next_state_values = torch.zeros(self.memory.batch_size)
-        for i in range(self.memory.batch_size):
-            next_state = batch.next_state[i]
-            if next_state is not "":
-                self.model.zero_grad()
-                self.model.init_hidden()
-                next_state_values[i] = torch.max(self.model(self.prepare_input(next_state)))
+        next_state_values[non_final_next_state_mask] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
         # Calculate the expected action values for each transition.
         gamma = 0.9
@@ -118,18 +122,25 @@ class Agent02(textworld.Agent):
         self.optimiser.step()
 
 
-    def prepare_input(self, input_string):
-        """ Process a room description string into a format to be input into the model. """
-        
-        # Split the input description text into lowercase words with no punctuation.
-        translator = str.maketrans('', '', string.punctuation)
-        sanitised_description = input_string.translate(translator).lower()
-        words = sanitised_description.split()
+    def encode_inputs(self, input_strings):
+        """ Process a batch of room description strings into a batch of tensors containing the one-hot encodings for each (relevant) word in the original string, ready to be input into the model. """
 
-        # Collect Tensors of word indices, removing all stop words and unknown words.
-        indices = []
-        for word in words:
-            if word in self.word_to_index:
-                indices.append(self.word_to_index[word])
-        
-        return torch.tensor(indices, dtype=torch.long)
+        # Create an all-zeros vector of size (batch size, number of words, vocab size)
+        encoded_inputs = torch.zeros(len(input_strings), self.num_input_words, len(self.word_to_index))
+
+        # Repeat for each input string in the batch.
+        for input_num in range(len(input_strings)):
+
+            # Split the input description text into lowercase words with no punctuation.
+            translator = str.maketrans('', '', string.punctuation)
+            sanitised_description = input_strings[input_num].translate(translator).lower()
+            words = sanitised_description.split()
+
+            # For all words, ignoring all stop words and unknown words, set the relevant 'ones' in the encoding tensor to create one-hot encodings.
+            word_num = 0
+            for word in words:
+                if word in self.word_to_index:
+                    encoded_inputs[input_num, word_num, self.word_to_index[word]]
+                    word_num = word_num + 1 
+
+        return encoded_inputs
