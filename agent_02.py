@@ -47,7 +47,7 @@ class Agent02(textworld.Agent):
         self.model = Model(len(all_words), self.num_input_words, 16, 64, len(self.actions))
 
         # Create a memory for transitions.
-        self.memory = ReplayMemory(500000, 20)
+        self.memory = ReplayMemory(500000, 8)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()

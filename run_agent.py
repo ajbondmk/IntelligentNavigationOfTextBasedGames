@@ -126,11 +126,11 @@ def extract_games(world_folder):
     return envs
 
 
-def test_random_agent(agent, world_folder, max_moves, num_games = 0):
-    run_agent(False, True, agent, world_folder, max_moves, 1, num_games)
+def test_random_agent(agent, world_folder, max_moves, num_epochs=1, num_games=0):
+    run_agent(False, True, agent, world_folder, max_moves, num_epochs, num_games)
 
-def train_agent_02(agent, world_folder, max_moves, num_epochs, num_games=0):
+def train_agent_02(agent, world_folder, max_moves, num_epochs=1, num_games=0):
     run_agent(True, False, agent, world_folder, max_moves, num_epochs, num_games)
 
-def test_agent_02(agent, world_folder, max_moves, num_games=0):
-    run_agent(False, False, agent, world_folder, max_moves, 1, num_games)
+def test_agent_02(agent, world_folder, max_moves, num_epochs=1, num_games=0):
+    run_agent(False, False, agent, world_folder, max_moves, num_epochs, num_games)
