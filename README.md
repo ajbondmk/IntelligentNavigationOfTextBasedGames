@@ -31,6 +31,4 @@ A script which tests `RandomAgent` can be found in `my_code/main_random_agent.py
 
 A script which trains and tests `Agent02` can be found in `my_code/main_agent_02.py`.
 
-The parameters `max_moves` and `num_epochs` can be edited in these files. For `RandomAgent`, the parameter `world_folder` can be set; for `Agent02`, the parameters `train_world_folder` and `test_world_folder` can bbe set.
-
-To provide a more verbose terminal output, open the file `debug_print.py` and set `DEBUG` to `True`. For a less verbose output, set it to `False`.
+The parameters `max_moves` and `num_epochs` can be edited in these files. For `RandomAgent`, the parameter `world_folder` can be set; for `Agent02`, the parameters `train_world_folder` and `test_world_folder` can be set.

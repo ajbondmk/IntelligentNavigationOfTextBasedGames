@@ -8,8 +8,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 from nn_module import Model
 from replay_memory import ReplayMemory
-from debug_print import debug_print
-import sys
 
 
 class Agent02(textworld.Agent):
@@ -60,13 +58,10 @@ class Agent02(textworld.Agent):
     def set_epsilon(self, epsilon):
         """ Set the value of epsilon, which controls how likely the agent is to choose a random action. """
         self.epsilon = epsilon
-        debug_print("Epsilon:  {:f}".format(self.epsilon))
 
 
     def act(self, game_state):
         """ Choose an action. """
-
-        debug_print()
         
         # With probability (1 - epsilon), choose an action using the model.
         if random.random() > self.epsilon:
@@ -75,7 +70,7 @@ class Agent02(textworld.Agent):
             output = self.model(input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
-            debug_print("Output:   [{:s}]".format(", ".join(str(i) for i in output.tolist())))
+            # TODO: Remove this: print("[{:s}]".format(", ".join(str(i) for i in output.tolist())))
         
         # With probability epsilon, choose a random action.
         else:
@@ -117,7 +112,6 @@ class Agent02(textworld.Agent):
 
         # Calculate loss and optimise the model accordingly.
         loss = self.loss_criterion(action_values, expected_action_values.detach())
-        debug_print("Loss:     {:f}".format(loss.item()))
         self.optimiser.zero_grad()
         loss.backward()
         self.optimiser.step()

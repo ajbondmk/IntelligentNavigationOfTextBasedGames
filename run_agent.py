@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import textworld
-from debug_print import debug_print, debug_not_print
 
 
 def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_epochs, num_games):
@@ -49,9 +48,6 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             # Create a TextWorld environment for the game.
             env = textworld.start(world_folder + "/" + envs[game])
             
-            debug_print()
-            debug_print("Game {:d}/{:d} - Epoch {:d}/{:d}".format(game+1, num_games, epoch+1, num_epochs))
-            
             # Reset the agent and environment.
             game_state = env.reset()
             
@@ -72,7 +68,6 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                 # Perform the action chosen by the agent.
                 action = agent.act(game_state)
                 game_state, coin_reward, done = env.step(action)
-                debug_print("Action:   {:s}".format(action))
                 
                 if is_training:
                     state_before = state_after
@@ -87,7 +82,6 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                         if state_after not in inputs_seen:
                             reward += 1
                             inputs_seen.append(state_after)
-                    debug_print("Reward:   {:d}".format(reward))
                 
                     # Add the transition to memory.
                     agent.memory.add_item(state_before, action, state_after, reward)
@@ -105,27 +99,23 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             num_moves.append(game_state.nb_moves)
             scores.append(game_state.score)
             if is_training:
-                debug_not_print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, num_epochs, game_state.nb_moves))
-
-            debug_print()
+                print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, num_epochs, game_state.nb_moves))
 
             # Close the TextWorld environment.
             env.close()
 
+        # Periodically throughout training, perform some tests.
+        test_interval = 50
         if is_training:
-            if (epoch+1) % 50 == 0:
-                print()
-                test_agent_02(agent, world_folder, max_moves=200, num_epochs=5, num_games=num_games)  
-                print()
+            if (epoch+1) % test_interval == 0:
+                test_agent_02(agent, world_folder, max_moves=200, num_epochs=5, num_games=num_games)
 
-    # Print the final statistics.
-    # print()
-    # print("Moves:", *num_moves)
-    # print("Average moves: {:.1f}".format(np.mean(num_moves)))
-    # print("Average score: {:.3f}".format(np.mean(scores)))
+    # Print test statistics.
     if not is_training:
         print("Average moves: {:.1f}".format(np.mean(num_moves)))
         print("Average score: {:.3f}".format(np.mean(scores)))
+    
+    print()
 
 
 # Select world folder and locate its games.
