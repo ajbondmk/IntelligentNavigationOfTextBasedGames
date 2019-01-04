@@ -19,12 +19,8 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
     """
 
     print()
-    if is_training:
-        print("TRAINING")
-    else:
-        print("TESTING")
-    print()
 
+    # Set the lower value which epsilon should reduce to over time.
     epsilon_lower_bound = 0.2
 
     if not is_random_agent and not is_training:
@@ -40,6 +36,9 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
 
     # Initialise the arrays of move counts and scores.
     num_moves, scores = [], []
+
+    # Initialse the global step count to 0.
+    count = 0
 
     # Repeat each game multiple times.
     for epoch in range(num_epochs):
@@ -93,8 +92,10 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                     # Add the transition to memory.
                     agent.memory.add_item(state_before, action, state_after, reward)
 
-                    # Train the agent.
-                    agent.optimise()
+                    # Every 4 steps, train the agent.
+                    count = count + 1
+                    if count % 4 == 0:
+                        agent.optimise()
 
                 # If the game is finished (completed), break.
                 if done:
@@ -102,19 +103,29 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
 
             # Keep track of the latest statistics.
             num_moves.append(game_state.nb_moves)
-            debug_not_print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, num_epochs, game_state.nb_moves))
             scores.append(game_state.score)
+            if is_training:
+                debug_not_print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, num_epochs, game_state.nb_moves))
 
             debug_print()
 
             # Close the TextWorld environment.
             env.close()
 
+        if is_training:
+            if (epoch+1) % 50 == 0:
+                print()
+                test_agent_02(agent, world_folder, max_moves=200, num_epochs=5, num_games=num_games)  
+                print()
+
     # Print the final statistics.
-    print()
-    print("Moves:", *num_moves)
-    print("Average moves: {:.1f}".format(np.mean(num_moves)))
-    print("Average score: {:.3f}".format(np.mean(scores)))
+    # print()
+    # print("Moves:", *num_moves)
+    # print("Average moves: {:.1f}".format(np.mean(num_moves)))
+    # print("Average score: {:.3f}".format(np.mean(scores)))
+    if not is_training:
+        print("Average moves: {:.1f}".format(np.mean(num_moves)))
+        print("Average score: {:.3f}".format(np.mean(scores)))
 
 
 # Select world folder and locate its games.

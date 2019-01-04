@@ -47,7 +47,7 @@ class Agent02(textworld.Agent):
         self.model = Model(len(all_words), self.num_input_words, 16, 64, len(self.actions))
 
         # Create a memory for transitions.
-        self.memory = ReplayMemory(500000, 8)
+        self.memory = ReplayMemory(500000, 32)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()
@@ -70,8 +70,7 @@ class Agent02(textworld.Agent):
         
         # With probability (1 - epsilon), choose an action using the model.
         if random.random() > self.epsilon:
-            self.model.zero_grad()
-            self.model.init_hidden()
+            self.model.init_hidden(1)
             input = self.encode_inputs([game_state.description])
             output = self.model(input)[0]
             _,b = torch.max(output,0)
@@ -100,19 +99,20 @@ class Agent02(textworld.Agent):
         reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
 
         # Calculate the value predicted by the model for each transition in the batch.
-        self.model.zero_grad()
-        self.model.init_hidden()
+        self.model.init_hidden(self.memory.batch_size)
         all_action_values = self.model(self.encode_inputs(batch.state))
         action_values = torch.stack([all_action_values[i,action_batch[i]] for i in range(len(all_action_values))])
 
         # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
         non_final_next_state_mask = torch.tensor(tuple(map(lambda s: s is not "", batch.next_state)), dtype=torch.uint8)
-        non_final_next_state_values = self.model(self.encode_inputs([s for s in batch.next_state if s is not ""]))
+        non_final_next_states = self.encode_inputs([s for s in batch.next_state if s is not ""])
+        self.model.init_hidden(len(non_final_next_states))
+        non_final_next_state_values = self.model(non_final_next_states)
         next_state_values = torch.zeros(self.memory.batch_size)
         next_state_values[non_final_next_state_mask] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
         # Calculate the expected action values for each transition.
-        gamma = 0.9
+        gamma = 0.5
         expected_action_values = reward_batch + (next_state_values * gamma)
 
         # Calculate loss and optimise the model accordingly.

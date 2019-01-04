@@ -27,19 +27,18 @@ class Model(nn.Module):
         self.lstm = nn.LSTM(embedding_dim, hidden_dim)
         self.hidden_to_actions = nn.Linear(hidden_dim, num_actions)
 
-        self.init_hidden()
 
-
-    def init_hidden(self):
+    def init_hidden(self, batch_size):
         """ Initialise the hidden layer to all zeros. """
-        self.hidden = (torch.zeros(1, self.num_words, self.hidden_dim),
-                torch.zeros(1, self.num_words, self.hidden_dim))
+        self.hidden = (torch.zeros(1, batch_size, self.hidden_dim),
+                torch.zeros(1, batch_size, self.hidden_dim))
+        # TODO: Should this be zeros or random?
 
 
     def forward(self, batch):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(batch)
-        lstm_out, self.hidden = self.lstm(embeddings, self.hidden)
-        actions = self.hidden_to_actions(lstm_out)
+        lstm_out, self.hidden = self.lstm(embeddings.view(50,len(embeddings),-1), self.hidden)
+        actions = self.hidden_to_actions(lstm_out.view(len(embeddings),50,-1))
         final_actions = torch.stack([actions[i,-1] for i in range(len(actions))])
         return final_actions
