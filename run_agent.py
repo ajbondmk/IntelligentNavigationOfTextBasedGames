@@ -67,17 +67,13 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             
                 # Perform the action chosen by the agent.
                 action = agent.act(game_state)
-                game_state, coin_reward, done = env.step(action)
+                game_state, reward, done = env.step(action)
                 
                 if is_training:
                     state_before = state_after
                     state_after = game_state.description
 
-                    # Calculate the reward:
-                    #    10 points if the agent picked up the coin.
-                    #    1 point if the agent discovered a new room.
-                    #    0 points otherwise.
-                    reward = coin_reward * 10
+                    # Give a reward of 1 point if the agent picked up the coin or discovered a new room, and 0 points otherwise.
                     if reward is 0:
                         if state_after not in inputs_seen:
                             reward += 1
