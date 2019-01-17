@@ -135,7 +135,7 @@ class Agent02(textworld.Agent):
             word_num = 0
             for word in words:
                 if word in self.word_to_index:
-                    encoded_inputs[input_num, word_num, self.word_to_index[word]]
+                    encoded_inputs[input_num, word_num, self.word_to_index[word]] = 1
                     word_num = word_num + 1 
 
         return encoded_inputs
