@@ -112,8 +112,10 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
 
     # Print test statistics.
     if not is_training:
+        with open("TestResults.txt", "a") as f:
+            f.write("{:.1f}   {:.1f}\n".format(np.mean(num_moves), np.mean(scores)))
         print("Average moves: {:.1f}".format(np.mean(num_moves)))
-        print("Average score: {:.3f}".format(np.mean(scores)))
+        print("Average score: {:.1f}".format(np.mean(scores)))
     
     print()
 

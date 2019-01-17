@@ -37,7 +37,7 @@ class Model(nn.Module):
     def forward(self, batch):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(batch)
-        lstm_out, self.hidden = self.lstm(embeddings.view(50,len(embeddings),-1), self.hidden)
-        actions = self.hidden_to_actions(lstm_out.view(len(embeddings),50,-1))
+        lstm_out, self.hidden = self.lstm(embeddings.view(50,len(batch),-1), self.hidden)
+        actions = self.hidden_to_actions(lstm_out.view(len(batch),50,-1))
         final_actions = torch.stack([actions[i,-1] for i in range(len(actions))])
         return final_actions

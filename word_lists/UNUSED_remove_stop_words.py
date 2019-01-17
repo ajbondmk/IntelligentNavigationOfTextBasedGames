@@ -16,4 +16,5 @@ f3 = open("word_lists/all_words.txt", "w")
 for word in all_words:
     f3.write(word)
     f3.write('\n')
+f3.close()
 # Remember to remove the final newline.
