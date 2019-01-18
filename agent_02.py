@@ -42,14 +42,14 @@ class Agent02(textworld.Agent):
         self.num_input_words = 50
         
         # Create a neural network model.
-        self.model = Model(len(all_words), self.num_input_words, 16, 64, len(self.actions))
+        self.model = Model(len(all_words), self.num_input_words, 20, 100, len(self.actions))
 
         # Create a memory for transitions.
         self.memory = ReplayMemory(500000, 32)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()
-        self.optimiser = optim.RMSprop(self.model.parameters())
+        self.optimiser = optim.Adam(self.model.parameters(), lr=0.001)
 
         # Initialise epsilon.
         self.epsilon = 0.1
