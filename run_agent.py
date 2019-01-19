@@ -20,11 +20,12 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
     print()
 
     # Set the lower value which epsilon should reduce to over time.
-    epsilon_lower_bound = 0.2
+    epsilon_limit_value = 0.2
+    epsilon_limit_epoch = 1000
 
     if not is_random_agent and not is_training:
         # Set the value of epsilon for testing.
-        agent.set_epsilon(epsilon_lower_bound)
+        agent.set_epsilon(epsilon_limit_value)
 
     # Find all games in the chosen world.
     envs = extract_games(world_folder)
@@ -54,10 +55,10 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             if is_training:
 
                 # Update epsilon.
-                if num_epochs * num_games == 1:
-                    agent.set_epsilon(1)
-                else:
-                    agent.set_epsilon(1 - (1 - epsilon_lower_bound) * ((epoch * (game + 1) + game) / (num_epochs * num_games - 1)))
+                if epoch < epsilon_limit_epoch - 1:
+                    agent.set_epsilon(1 - ((1 - epsilon_limit_value) * (epoch / (epsilon_limit_epoch - 2))))
+                elif epoch == epsilon_limit_epoch - 1:
+                    agent.set_epsilon(epsilon_limit_value)
 
                 # Initialise the list of room descriptions seen so far.
                 state_after = game_state.description
