@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from nn_module import Model
-from replay_memory import ReplayMemory
+from replay_memory import PriorityReplayMemory
 
 
 class Agent02(textworld.Agent):
@@ -45,7 +45,7 @@ class Agent02(textworld.Agent):
         self.model = Model(len(all_words), self.num_input_words, len(self.actions))
 
         # Create a memory for transitions.
-        self.memory = ReplayMemory(500000, 32)
+        self.memory = PriorityReplayMemory(500000, 32, 0.25)
         
         # Create a criterion for calculating loss and an optimiser for training the model.
         self.loss_criterion = nn.MSELoss()
