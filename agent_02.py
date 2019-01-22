@@ -42,7 +42,7 @@ class Agent02(textworld.Agent):
         self.num_input_words = 50
         
         # Create a neural network model.
-        self.model = Model(len(all_words), self.num_input_words, 20, 100, len(self.actions))
+        self.model = Model(len(all_words), self.num_input_words, len(self.actions))
 
         # Create a memory for transitions.
         self.memory = ReplayMemory(500000, 32)
