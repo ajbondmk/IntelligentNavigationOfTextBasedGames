@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from nn_module import Model
 from replay_memory import PriorityReplayMemory
+import sys
 
 
 class Agent02(textworld.Agent):
@@ -20,7 +21,7 @@ class Agent02(textworld.Agent):
         # Create a list of possible actions.
         self.actions = ['go north', 'go east', 'go south', 'go west', 'take coin']
 
-        # Create a dictionary from each command to a unique index.
+        # Create a dictionary from each action to a unique index.
         self.action_to_index = {}
         for i in range(len(self.actions)):
             self.action_to_index[self.actions[i]] = i
@@ -66,7 +67,7 @@ class Agent02(textworld.Agent):
         # With probability (1 - epsilon), choose an action using the model.
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
-            input = self.encode_inputs([game_state.description])
+            input = self.encode_inputs([game_state.command], [game_state.description])
             output = self.model(input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
@@ -88,23 +89,25 @@ class Agent02(textworld.Agent):
             return
         
         # Create a list of actions for the batch.
-        action_batch = [self.action_to_index[a] for a in batch.action]
+        action_value_batch = [self.action_to_index[a] for a in batch.action]
 
         # Create a tensor of rewards for the batch.
         reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        all_action_values = self.model(self.encode_inputs(batch.state))
-        action_values = torch.stack([all_action_values[i,action_batch[i]] for i in range(len(all_action_values))])
+        all_action_values = self.model(self.encode_inputs(batch.action, batch.state))
+        action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
         # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
-        non_final_next_state_mask = torch.tensor(tuple(map(lambda s: s is not "", batch.next_state)), dtype=torch.uint8)
-        non_final_next_states = self.encode_inputs([s for s in batch.next_state if s is not ""])
-        self.model.init_hidden(len(non_final_next_states))
-        non_final_next_state_values = self.model(non_final_next_states)
+        non_final_next_state_mask = list(map(lambda s: s is not "", batch.next_state))
+        non_final_next_states = np.array(batch.next_state)[non_final_next_state_mask]
+        non_final_actions = np.array(batch.action)[non_final_next_state_mask]
+        non_final_nexts = self.encode_inputs(non_final_actions, non_final_next_states)
+        self.model.init_hidden(len(non_final_nexts))
+        non_final_next_state_values = self.model(non_final_nexts)
         next_state_values = torch.zeros(self.memory.batch_size)
-        next_state_values[non_final_next_state_mask] = torch.stack([torch.max(values) for values in non_final_next_state_values])
+        next_state_values[torch.tensor(tuple(non_final_next_state_mask), dtype=torch.uint8)] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
         # Calculate the expected action values for each transition.
         gamma = 0.5
@@ -117,25 +120,31 @@ class Agent02(textworld.Agent):
         self.optimiser.step()
 
 
-    def encode_inputs(self, input_strings):
-        """ Process a batch of room description strings into a batch of tensors containing the one-hot encodings for each (relevant) word in the original string, ready to be input into the model. """
+    def encode_inputs(self, actions, descriptions):
+        """ Takes in a batch of actions and room descriptions. Processes these inputs into a batch of tensors containing the one-hot encodings for each (relevant) word in the pairs of action and description, ready to be input into the model. """
+        
+        batch_size = min(len(actions), len(descriptions))
 
         # Create an all-zeros vector of size (batch size, number of words, vocab size)
-        encoded_inputs = torch.zeros(len(input_strings), self.num_input_words, len(self.word_to_index))
+        encoded_inputs = torch.zeros(batch_size, self.num_input_words, len(self.word_to_index))
 
-        # Repeat for each input string in the batch.
-        for input_num in range(len(input_strings)):
+        # Repeat for each pair in the batch.
+        for i in range(batch_size):
 
-            # Split the input description text into lowercase words with no punctuation.
+            # Concatenate the action and the description.
+            actions = list(map(lambda a : a if a is not None else "", actions))
+            concatenated = actions[i] + descriptions[i]
+
+            # Split the concatenated string into lowercase words with no punctuation.
             translator = str.maketrans('', '', string.punctuation)
-            sanitised_description = input_strings[input_num].translate(translator).lower()
+            sanitised_description = concatenated.translate(translator).lower()
             words = sanitised_description.split()
 
             # For all words, ignoring all stop words and unknown words, set the relevant 'ones' in the encoding tensor to create one-hot encodings.
             word_num = 0
             for word in words:
                 if word in self.word_to_index:
-                    encoded_inputs[input_num, word_num, self.word_to_index[word]] = 1
+                    encoded_inputs[i, word_num, self.word_to_index[word]] = 1
                     word_num = word_num + 1 
 
         return encoded_inputs
