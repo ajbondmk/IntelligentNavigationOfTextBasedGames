@@ -25,7 +25,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
 
     if not is_random_agent and not is_training:
         # Set the value of epsilon for testing.
-        agent.set_epsilon(epsilon_limit_value)
+        agent.set_epsilon(0)
 
     # Find all games in the chosen world.
     envs = extract_games(world_folder)
