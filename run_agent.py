@@ -102,7 +102,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
             env.close()
 
         # Periodically throughout training, perform some tests.
-        test_interval = 50
+        test_interval = 25
         if is_training:
             if (epoch+1) % test_interval == 0:
                 if epoch+1 == test_interval:
@@ -110,7 +110,7 @@ def run_agent(is_training, is_random_agent, agent, world_folder, max_moves, num_
                         f.write("\n\n--- TITLE HERE ---\n")
                 with open("TestResults.txt", "a") as f:
                     f.write("{}   ".format(epoch+1))
-                test_agent_02(agent, world_folder, max_moves=200, num_epochs=5, num_games=num_games)
+                test_agent_02(agent, world_folder, max_moves=200, num_epochs=10, num_games=num_games)
 
     # Print test statistics.
     if not is_training:
