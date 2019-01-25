@@ -68,7 +68,7 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
             input = self.encode_inputs([game_state.command], [game_state.description])
-            output = self.model(input)[0]
+            output = self.model(*input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
             # TODO: Remove this: print("[{:s}]".format(", ".join(str(i) for i in output.tolist())))
@@ -96,16 +96,16 @@ class Agent02(textworld.Agent):
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        all_action_values = self.model(self.encode_inputs(batch.action, batch.state))
+        all_action_values = self.model(*self.encode_inputs(batch.action, batch.state))
         action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
         # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
         non_final_next_state_mask = list(map(lambda s: s is not "", batch.next_state))
         non_final_next_states = np.array(batch.next_state)[non_final_next_state_mask]
         non_final_actions = np.array(batch.action)[non_final_next_state_mask]
-        non_final_nexts = self.encode_inputs(non_final_actions, non_final_next_states)
+        non_final_nexts, input_lengths = self.encode_inputs(non_final_actions, non_final_next_states)
         self.model.init_hidden(len(non_final_nexts))
-        non_final_next_state_values = self.model(non_final_nexts)
+        non_final_next_state_values = self.model(non_final_nexts, input_lengths)
         next_state_values = torch.zeros(self.memory.batch_size)
         next_state_values[torch.tensor(tuple(non_final_next_state_mask), dtype=torch.uint8)] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
@@ -125,8 +125,11 @@ class Agent02(textworld.Agent):
         
         batch_size = min(len(actions), len(descriptions))
 
-        # Create an all-zeros vector of size (batch size, number of words, vocab size)
+        # Create an all-zeros vector of size (batch size, number of words, vocab size).
         encoded_inputs = torch.zeros(batch_size, self.num_input_words, len(self.word_to_index))
+
+        # Initialise the vector of input lengths.
+        input_lengths = torch.zeros(batch_size, dtype=torch.long)
 
         # Repeat for each pair in the batch.
         for i in range(batch_size):
@@ -145,6 +148,9 @@ class Agent02(textworld.Agent):
             for word in words:
                 if word in self.word_to_index:
                     encoded_inputs[i, word_num, self.word_to_index[word]] = 1
-                    word_num = word_num + 1 
+                    word_num = word_num + 1
+            
+            # Add to the lengths array.
+            input_lengths[i] = word_num
 
-        return encoded_inputs
+        return (encoded_inputs, input_lengths)

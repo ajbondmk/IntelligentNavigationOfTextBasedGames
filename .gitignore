@@ -1,3 +1,5 @@
 __pycache__/
 gen_games/
 .vscode/*
+TestResults.txt
+test.py

@@ -34,12 +34,13 @@ class Model(nn.Module):
         # TODO: Use torch.nn.init.xavier_uniform
 
 
-    def forward(self, batch):
+    def forward(self, batch, lengths):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(batch)
-        lstm_out, self.hidden = self.lstm(embeddings.view(50,len(batch),-1), self.hidden)
-        intermediate = self.linear_1(lstm_out.view(len(batch),50,-1))
+        lstm_out, self.hidden = self.lstm(embeddings.permute(1,0,2), self.hidden)
+        lstm_out_permuted = lstm_out.permute(1,0,2)
+        lstm_out_final = torch.stack([lstm_out_permuted[i,lengths[i]-1] for i in range(len(batch))])
+        intermediate = self.linear_1(lstm_out_final)
         intermediate = self.relu(intermediate)
         actions = self.linear_2(intermediate)
-        final_actions = torch.stack([actions[i,-1] for i in range(len(actions))])
-        return final_actions
+        return actions
