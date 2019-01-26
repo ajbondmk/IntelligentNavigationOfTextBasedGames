@@ -21,10 +21,11 @@ class Model(nn.Module):
         intermediate_dim = 64
 
         self.word_embeddings = nn.Linear(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(embedding_dim, self.hidden_dim)
+        self.lstm = nn.LSTM(embedding_dim, self.hidden_dim, batch_first=True)
         self.linear_1 = nn.Linear(self.hidden_dim, intermediate_dim)
         self.relu = nn.ReLU()
         self.linear_2 = nn.Linear(intermediate_dim, num_actions)
+        self.init_weights()
 
 
     def init_hidden(self, batch_size):
@@ -34,12 +35,27 @@ class Model(nn.Module):
         # TODO: Use torch.nn.init.xavier_uniform
 
 
+    def init_weights(self):
+        for linear in [self.word_embeddings, self.linear_1, self.linear_2]:
+            torch.nn.init.xavier_uniform_(linear.weight.data)
+            linear.bias.data.fill_(0.0)
+        for lstm in [self.lstm]:
+            torch.nn.init.xavier_uniform_(lstm.weight_ih_l0)
+            torch.nn.init.orthogonal_(lstm.weight_hh_l0)
+            for names in lstm._all_weights:
+                for name in filter(lambda n: "bias" in n, names):
+                    bias = getattr(lstm, name)
+                    n = bias.size(0)
+                    start, end = n // 4, n // 2
+                    bias.data[start:end].fill_(1.0)
+            lstm.bias_ih_l0.data.fill_(0.0)
+
+
     def forward(self, batch, lengths):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(batch)
-        lstm_out, self.hidden = self.lstm(embeddings.permute(1,0,2), self.hidden)
-        lstm_out_permuted = lstm_out.permute(1,0,2)
-        lstm_out_final = torch.stack([lstm_out_permuted[i,lengths[i]-1] for i in range(len(batch))])
+        lstm_out, self.hidden = self.lstm(embeddings, self.hidden)
+        lstm_out_final = torch.stack([lstm_out[i,lengths[i]-1] for i in range(len(batch))])
         intermediate = self.linear_1(lstm_out_final)
         intermediate = self.relu(intermediate)
         actions = self.linear_2(intermediate)
