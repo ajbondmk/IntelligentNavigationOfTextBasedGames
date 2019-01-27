@@ -1,6 +1,9 @@
 import os
 import numpy as np
 import textworld
+from datetime import datetime
+from agent_02 import Agent02
+from random_agent import RandomAgent
 
 
 # The maximum number of moves taken before the game is failed.
@@ -246,8 +249,9 @@ def generate_results_file_name():
     return "test_results/{}_{}.txt".format(datetime.now().date(), datetime.now().time())
 
 
-def random_agent_eval(agent, world_folder):
+def random_agent_eval(world_folder):
     #TODO: Add description.
+    agent = RandomAgent()
     envs = extract_games(world_folder)
     results_file = generate_results_file_name()
     test_random_agent(
@@ -256,11 +260,12 @@ def random_agent_eval(agent, world_folder):
         results_file=results_file)
 
 
-def agent_02_eval_single(agent, world_folder):
+def agent_02_eval_single(world_folder):
     # TODO: Add description.
     envs = extract_games(world_folder)
     results_file = generate_results_file_name()
     for env in envs:
+        agent = Agent02()
         train_and_test_agent_02(
             agent=agent,
             envs=[env],
@@ -268,8 +273,9 @@ def agent_02_eval_single(agent, world_folder):
             results_file=results_file
         )
 
-def agent_02_eval_multiple(agent, world_folder):
+def agent_02_eval_multiple(world_folder):
     # TODO: Add description.
+    agent = Agent02()
     envs = extract_games(world_folder)
     results_file = generate_results_file_name()
     train_and_test_agent_02(
@@ -279,8 +285,9 @@ def agent_02_eval_multiple(agent, world_folder):
         results_file=results_file
     )
 
-def agent_02_eval_zero_shot(agent, train_world_folder, test_world_folder):
+def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
     # TODO: Add description.
+    agent = Agent02()
     train_envs = extract_games(train_world_folder)
     test_envs = extract_games(test_world_folder)
     results_file = generate_results_file_name()
