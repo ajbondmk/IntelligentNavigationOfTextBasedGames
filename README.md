@@ -8,6 +8,7 @@ To generate a world (a set of games), run a command matching the following forma
 `tw-make tw-coin_collector --level {level} --output tw_games/{folder_name}/`
 
 where `level` is defined as follows:
+
 |   `level`  |  mode  |  quest length |     total rooms     |  distractor rooms  |
 |:----------:|:------:|:-------------:|:-------------------:|:------------------:|
 |  1 to 100  |  easy  |    `level`    |       `level`       |        none        |
