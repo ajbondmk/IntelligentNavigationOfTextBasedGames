@@ -63,10 +63,9 @@ def train_and_test_agent_02(agent, envs, test_envs, results_file):
         # Run each game in the set of input games.
         for game in range(num_games):
 
-            # Create a TextWorld environment for the game.
+            # Create a TextWorld environment and game state for the game.
             env = textworld.start(envs[game])
-            
-            # Reset the agent and environment.
+            env.enable_extra_info("description")
             game_state = env.reset()
 
             # Update epsilon.
@@ -246,6 +245,7 @@ def extract_games(world_folder):
 
 def generate_results_file_name():
     """ Generate a filename to output results to, based on the current time and date. """
+    # return "test_results/TEMP"
     return "test_results/{}_{}.txt".format(datetime.now().date(), datetime.now().time())
 
 

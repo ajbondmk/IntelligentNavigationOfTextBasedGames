@@ -8,7 +8,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 from nn_module import Model
 from replay_memory import PriorityReplayMemory
-import sys
 
 
 class Agent02(textworld.Agent):
