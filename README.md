@@ -3,9 +3,9 @@
 
 ## Generating Games
 
-To generate a world (a set of games), run a command matching the following format:
+To generate a set of games, run a command matching the following format:
 
-`tw-make tw-coin_collector --level {level} --output tw_games/{folder_name}/`
+`for i in $(seq 1 {num_games}); do tw-make tw-coin_collector --level {level} --output tw_games/{folder_name}/; done`
 
 where `level` is defined as follows:
 
