@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-device = torch.device("cuda:0")
+device = torch.device("cuda:2")
 
 
 class Model(nn.Module):
