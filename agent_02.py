@@ -155,4 +155,9 @@ class Agent02(textworld.Agent):
             # Add to the lengths array.
             input_lengths[i] = word_num
 
-        return (encoded_inputs.to(device), input_lengths.to(device))
+
+        var1 = encoded_inputs.to(device)
+        var2 = input_lengths.to(device)
+        print(var1.is_cuda)
+        print(var2.is_cuda)
+        return (var1, var2)
