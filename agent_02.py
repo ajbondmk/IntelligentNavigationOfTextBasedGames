@@ -10,6 +10,9 @@ from nn_module import Model
 from replay_memory import PriorityReplayMemory
 
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
 class Agent02(textworld.Agent):
     """ Agent that uses an epsilon-greedy policy and a neural network model to select actions. """
 
@@ -67,7 +70,7 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
             input = self.encode_inputs([game_state.description], [game_state.command])
-            output = self.model(*input)[0]
+            output = self.model(*input.to(device))[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
         
@@ -94,7 +97,7 @@ class Agent02(textworld.Agent):
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        all_action_values = self.model(*self.encode_inputs(batch.state, batch.action))
+        all_action_values = self.model(*self.encode_inputs(batch.state, batch.action).to(device))
         action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
         # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
@@ -103,7 +106,7 @@ class Agent02(textworld.Agent):
         non_final_actions = np.array(batch.action)[non_final_next_state_mask]
         non_final_nexts, input_lengths = self.encode_inputs(non_final_next_states, non_final_actions)
         self.model.init_hidden(len(non_final_nexts))
-        non_final_next_state_values = self.model(non_final_nexts, input_lengths)
+        non_final_next_state_values = self.model(non_final_nexts.to(device), input_lengths.to(device))
         next_state_values = torch.zeros(self.memory.batch_size)
         next_state_values[torch.tensor(tuple(non_final_next_state_mask), dtype=torch.uint8)] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
