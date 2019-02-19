@@ -96,7 +96,7 @@ class Agent02(textworld.Agent):
         action_value_batch = [self.action_to_index[a] for a in batch.action]
 
         # Create a tensor of rewards for the batch.
-        reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward])
+        reward_batch = torch.stack([torch.tensor(r, dtype=torch.float) for r in batch.reward]).to(device)
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
@@ -112,7 +112,7 @@ class Agent02(textworld.Agent):
         self.model.init_hidden(len(non_final_nexts))
         non_final_next_state_values = self.model(non_final_nexts.to(device), input_lengths.to(device))
         next_state_values = torch.zeros(self.memory.batch_size)
-        next_state_values[torch.tensor(tuple(non_final_next_state_mask), dtype=torch.uint8)] = torch.stack([torch.max(values) for values in non_final_next_state_values])
+        next_state_values[torch.tensor(tuple(non_final_next_state_mask.to(device)), dtype=torch.uint8)] = torch.stack([torch.max(values) for values in non_final_next_state_values])
         
         # Calculate the expected action values for each transition.
         gamma = 0.5
