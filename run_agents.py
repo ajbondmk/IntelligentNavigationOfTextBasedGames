@@ -32,8 +32,6 @@ def train_and_test_agent_02(agent, envs, test_envs):
         test_envs - the list of environments to test on ([] means test on training envs)
     """
 
-    print()
-
     # Epsilon will decay from 1 to epsilon_limit_value over the first epsilon_limit_epoch epochs. then remain at epsilon_limit_value.
     epsilon_limit_value = 0.2
     epsilon_limit_epoch = 1000
@@ -104,7 +102,6 @@ def train_and_test_agent_02(agent, envs, test_envs):
             # Keep track of the statistics for this game and epoch, printing to console.
             num_moves.append(game_state.nb_moves)
             scores.append(game_state.score)
-            # print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, NUM_EPOCHS_AGENT_02_TRAIN, game_state.nb_moves))
 
             # Close the TextWorld environment.
             env.close()
@@ -175,8 +172,6 @@ def test_random_agent(agent, envs):
         envs - the list of environments
     """
 
-    print()
-
     # Number of games to be played.
     num_games = len(envs)
 
@@ -207,8 +202,7 @@ def test_random_agent(agent, envs):
 
             # Keep track of the latest statistics, printing to console.
             num_moves.append(game_state.nb_moves)
-            scores.append(game_state.score)
-            print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, NUM_EPOCHS_RANDOM_TEST, game_state.nb_moves))
+            scores.append(game_state.score)NUM_EPOCHS_RANDOM_TEST, game_state.nb_moves))
 
             # Close the TextWorld environment.
             env.close()
@@ -216,11 +210,7 @@ def test_random_agent(agent, envs):
         # Add latest statistics to the agent and print to the console.
         # agent.num_moves_results.append(np.mean(num_moves))
         agent.score_results.append(np.mean(scores))
-        print()
         print("Game: {}, Average moves: {:.1f}, Average score: {:.1f}".format(game, np.mean(num_moves), np.mean(scores)))
-        print()
-    
-    print()
 
 
 def extract_games(world_folder):
