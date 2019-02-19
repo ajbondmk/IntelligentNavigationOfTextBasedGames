@@ -12,14 +12,14 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 1000
+NUM_EPOCHS_AGENT_02_TRAIN = 2000
 NUM_EPOCHS_RANDOM_TEST = 100
 
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
 
 # The number of epochs between testing the agent (during training).
-TEST_INTERVAL = 20
+TEST_INTERVAL = 10
 
 
 def train_and_test_agent_02(agent, envs, test_envs):
