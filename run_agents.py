@@ -49,6 +49,8 @@ def train_and_test_agent_02(agent, envs, test_envs):
     # Initialse the global step count to 0.
     count = 0
 
+    test_agent_02(agent=agent, envs=test_envs)
+
     # Repeat each game multiple times.
     for epoch in range(NUM_EPOCHS_AGENT_02_TRAIN):
 
