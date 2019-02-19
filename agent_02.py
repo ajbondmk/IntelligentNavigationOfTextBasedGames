@@ -71,6 +71,7 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
             input = self.encode_inputs([game_state.description], [game_state.command])
+            print("MODEL 1", self.model.is_cuda)
             output = self.model(*input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
