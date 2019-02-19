@@ -47,6 +47,7 @@ class Agent02(textworld.Agent):
         
         # Create a neural network model.
         self.model = Model(len(all_words), self.num_input_words, len(self.actions))
+        self.model.to(device)
 
         # Create a memory for transitions.
         self.memory = PriorityReplayMemory(500000, 32, 0.25)
