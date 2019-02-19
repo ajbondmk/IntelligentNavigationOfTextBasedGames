@@ -202,7 +202,7 @@ def test_random_agent(agent, envs):
 
             # Keep track of the latest statistics, printing to console.
             num_moves.append(game_state.nb_moves)
-            scores.append(game_state.score)NUM_EPOCHS_RANDOM_TEST, game_state.nb_moves))
+            scores.append(game_state.score)
 
             # Close the TextWorld environment.
             env.close()
