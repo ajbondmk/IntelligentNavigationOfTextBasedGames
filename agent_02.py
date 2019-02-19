@@ -70,7 +70,7 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
             input = self.encode_inputs([game_state.description], [game_state.command])
-            output = self.model(*input.to(device))[0]
+            output = self.model(*input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
         
@@ -97,7 +97,7 @@ class Agent02(textworld.Agent):
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        all_action_values = self.model(*self.encode_inputs(batch.state, batch.action).to(device))
+        all_action_values = self.model(*self.encode_inputs(batch.state, batch.action))
         action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
         # Calculate the maximum value predicted by the model for an action taken in the next state of each transition in the batch.
@@ -154,4 +154,4 @@ class Agent02(textworld.Agent):
             # Add to the lengths array.
             input_lengths[i] = word_num
 
-        return (encoded_inputs, input_lengths)
+        return (encoded_inputs.to(device), input_lengths.to(device))
