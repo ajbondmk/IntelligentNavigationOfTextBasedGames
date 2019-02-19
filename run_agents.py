@@ -160,7 +160,7 @@ def test_agent_02(agent, envs):
     # Add latest statistics to the agent and print to the console.
     # agent.num_moves_results.append(np.mean(num_moves))
     agent.score_results.append(np.mean(scores))
-    print("\nAverage moves: {:.1f}, Average score: {:.1f}\n".format(np.mean(num_moves), np.mean(scores)))
+    print("Average moves: {:.1f}, Average score: {:.1f}".format(np.mean(num_moves), np.mean(scores)))
 
 
 def test_random_agent(agent, envs):
@@ -274,7 +274,7 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
     agent = Agent02()
     train_envs = extract_games(train_world_folder)
     test_envs = extract_games(test_world_folder)
-    results_file = generate_results_file_name()
+    results_file_name = generate_results_file_name()
     train_and_test_agent_02(
         agent=agent,
         envs=train_envs,

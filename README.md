@@ -30,14 +30,19 @@ where `level` is defined as follows:
 
 ## Training and Testing
 
-A script which tests `RandomAgent` can be found in `my_code/main_random_agent.py`.
+To test a random agent on a set of games, run a command of the following format:
 
-A script which trains and tests `Agent02` can be found in `my_code/main_agent_02.py`.
+`main.py random [world_folder]`
 
-These script for `Agent02` can be edited to point to run one of the following tests:
-- `agent_02_eval_single`
-- `agent_02_eval_multiple`
-- `agent_02_eval_zero_shot`
-<!-- TODO: Add descriptions. -->
+To train and test Agent02, run a command of the following format:
 
-Both scripts (for `RandomAgent` and `Agent02`) can be edited to point to different world folders.
+`main.py agent02 [single|multiple|zero-shot] [world_folder] {test_world_folder}`
+
+The argument `[single|multiple|zero-shot]` determines which experiment is run. If `zero-shot` is selected, a `test_world_folder` must additionally be provided.
+
+<!--
+TODO: Add experiment descriptions.
+- `single`: ...
+- `multiple`: ...
+- `zero-shot`: ...
+-->
