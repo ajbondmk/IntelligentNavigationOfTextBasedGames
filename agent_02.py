@@ -59,6 +59,10 @@ class Agent02(textworld.Agent):
         # Initialise epsilon.
         self.epsilon = 0.1
 
+        # Initialise variables to track test results.
+        # self.num_moves_results = []
+        self.score_results = []
+
 
     def set_epsilon(self, epsilon):
         """ Set the value of epsilon, which controls how likely the agent is to choose a random action. """

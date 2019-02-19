@@ -10,6 +10,10 @@ class RandomAgent(textworld.Agent):
     # A list of all possible actions.
     actions = ['go north', 'go east', 'go south', 'go west', 'take coin']
 
+    # Initialise variables to track test results.
+    # self.num_moves_results = []
+    score_results = []
+
 
     def act(self, game_state):
         """ Choose a random action. """

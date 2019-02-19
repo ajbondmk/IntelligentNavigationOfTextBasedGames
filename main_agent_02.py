@@ -1,6 +1,6 @@
 from run_agents import agent_02_eval_single, agent_02_eval_multiple, agent_02_eval_zero_shot
 
-world_folder = "tw_games/003"
+world_folder = "tw_games/initial"
 
 try:
     agent_02_eval_single(world_folder)
