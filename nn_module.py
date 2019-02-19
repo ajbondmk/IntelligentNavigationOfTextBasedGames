@@ -36,8 +36,8 @@ class Model(nn.Module):
         # self.hidden = (torch.zeros(1, batch_size, self.hidden_dim).to(device),
                 # torch.zeros(1, batch_size, self.hidden_dim).to(device))
         self.hidden = (
-            torch.empty(1, batch_size, self.hidden_dim),
-            torch.empty(1, batch_size, self.hidden_dim))
+            torch.empty(1, batch_size, self.hidden_dim).to(device),
+            torch.empty(1, batch_size, self.hidden_dim).to(device))
         torch.nn.init.xavier_uniform_(self.hidden[0])
         torch.nn.init.xavier_uniform_(self.hidden[1])
 
