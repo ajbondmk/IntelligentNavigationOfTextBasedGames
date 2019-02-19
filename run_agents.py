@@ -12,7 +12,7 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 100 #TODO
+NUM_EPOCHS_AGENT_02_TRAIN = 1000
 NUM_EPOCHS_RANDOM_TEST = 100
 
 # The number of epochs between training the model.
@@ -104,7 +104,7 @@ def train_and_test_agent_02(agent, envs, test_envs):
             # Keep track of the statistics for this game and epoch, printing to console.
             num_moves.append(game_state.nb_moves)
             scores.append(game_state.score)
-            print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, NUM_EPOCHS_AGENT_02_TRAIN, game_state.nb_moves))
+            # print("Game {:d}/{:d} - Epoch {:d}/{:d} - Moves {:d}".format(game+1, num_games, epoch+1, NUM_EPOCHS_AGENT_02_TRAIN, game_state.nb_moves))
 
             # Close the TextWorld environment.
             env.close()
