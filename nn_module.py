@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 
 
+device = torch.device("cuda:0")
+
+
 class Model(nn.Module):
     """ The neural network model used by Agent02. """
 
@@ -30,8 +33,8 @@ class Model(nn.Module):
 
     def init_hidden(self, batch_size):
         """ Initialise the hidden layer to all zeros. """
-        self.hidden = (torch.zeros(1, batch_size, self.hidden_dim),
-                torch.zeros(1, batch_size, self.hidden_dim))
+        self.hidden = (torch.zeros(1, batch_size, self.hidden_dim).to(device),
+                torch.zeros(1, batch_size, self.hidden_dim).to(device))
         # TODO: Use torch.nn.init.xavier_uniform
 
 
