@@ -146,10 +146,9 @@ def test_agent_02(agent, envs, results_file):
     # Run each game in the set of input games.
     for game in range(num_games):
 
-        # Create a TextWorld environment for the game.
+        # Create a TextWorld environment and game state for the game.
         env = textworld.start(envs[game])
-        
-        # Reset the agent and environment.
+        env.enable_extra_info("description")
         game_state = env.reset()
 
         # Allow the agent to perform up to MAX_MOVES_TEST actions.
@@ -200,10 +199,9 @@ def test_random_agent(agent, envs, results_file):
         # Repeat each game multiple times.
         for epoch in range(NUM_EPOCHS_RANDOM_TEST):
 
-            # Create a TextWorld environment for the game.
+            # Create a TextWorld environment and game state for the game.
             env = textworld.start(envs[game])
-            
-            # Reset the agent and environment.
+            env.enable_extra_info("description")
             game_state = env.reset()
 
             # Allow the agent to perform up to MAX_MOVES_TEST actions.
