@@ -71,7 +71,7 @@ class Agent02(textworld.Agent):
         if random.random() > self.epsilon:
             self.model.init_hidden(1)
             input = self.encode_inputs([game_state.description], [game_state.command])
-            print("MODEL 1", self.model.parameters().is_cuda)
+            print("MODEL 1", next(self.model.parameters()).is_cuda)
             output = self.model(*input)[0]
             _,b = torch.max(output,0)
             action = self.actions[b]
@@ -99,7 +99,7 @@ class Agent02(textworld.Agent):
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        print("MODEL: ", self.model.parameters().is_cuda)
+        print("MODEL: ", next(self.model.parameters()).is_cuda)
         all_action_values = self.model(*self.encode_inputs(batch.state, batch.action))
         action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
