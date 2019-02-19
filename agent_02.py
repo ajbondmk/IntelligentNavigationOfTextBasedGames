@@ -99,7 +99,7 @@ class Agent02(textworld.Agent):
 
         # Calculate the value predicted by the model for each transition in the batch.
         self.model.init_hidden(self.memory.batch_size)
-        print("MODEL: ", self.model.parameters.is_cuda)
+        print("MODEL: ", self.model.parameters().is_cuda)
         all_action_values = self.model(*self.encode_inputs(batch.state, batch.action))
         action_values = torch.stack([all_action_values[i,action_value_batch[i]] for i in range(len(all_action_values))])
 
