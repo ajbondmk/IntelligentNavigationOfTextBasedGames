@@ -5,7 +5,7 @@
 
 To generate a single game, run a command matching the following format:
 
-`tw-make tw-coin_collector --level {level} --output tw_games/`
+`tw-make tw-coin_collector --level {level} --output tw_games/{folder_name}/`
 
 To generate a set of games, run a command matching the following format:
 
@@ -32,11 +32,11 @@ where `level` is defined as follows:
 
 To test a random agent on a set of games, run a command of the following format:
 
-`main.py random [world_folder]`
+`python3 main.py random [world_folder]`
 
 To train and test Agent02, run a command of the following format:
 
-`main.py agent02 [single|multiple|zero-shot] [world_folder] {test_world_folder}`
+`python3 main.py agent02 [single|multiple|zero-shot] [world_folder] {test_world_folder}`
 
 The argument `[single|multiple|zero-shot]` determines which experiment is run. If `zero-shot` is selected, a `test_world_folder` must additionally be provided.
 

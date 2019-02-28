@@ -155,6 +155,8 @@ class Agent02(textworld.Agent):
                 if word in self.word_to_index:
                     encoded_inputs[i, word_num, self.word_to_index[word]] = 1
                     word_num = word_num + 1
+                    if word_num == self.num_input_words:
+                        break
             
             # Add to the lengths array.
             input_lengths[i] = word_num
