@@ -278,7 +278,7 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
     agent = Agent02()
     train_envs = extract_games(train_world_folder)
     test_envs = extract_games(test_world_folder)
-    results_file_name = generate_results_file_name("zero_shot", world_folder)
+    results_file_name = generate_results_file_name("zero_shot", train_world_folder)
     train_and_test_agent_02(
         agent=agent,
         envs=train_envs,
