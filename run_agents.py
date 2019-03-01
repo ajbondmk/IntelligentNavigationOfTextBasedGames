@@ -223,10 +223,12 @@ def extract_games(world_folder):
             envs.append(world_folder + "/" + filename)
     return envs
 
-def generate_results_file_name():
+def generate_results_file_name(prefix, world_folder):
     """ Generate a filename to output results to, based on the current time and date. """
-    # return "test_results/TEMP.csv"
-    return "test_results/{}_{}.csv".format(datetime.now().date(), datetime.now().time())
+    if (world_folder[:9] == "tw_games/"):
+        return prefix + "_" + world_folder[9:] + ".csv"
+    else:
+        return "test_results/{}_{}.csv".format(datetime.now().date(), datetime.now().time())
 
 def output_to_csv(agent, results_file_name):
     with open(results_file_name, mode='a') as results_file:
@@ -238,7 +240,7 @@ def random_agent_eval(world_folder):
     #TODO: Add description.
     agent = RandomAgent()
     envs = extract_games(world_folder)
-    results_file_name = generate_results_file_name()
+    results_file_name = generate_results_file_name("random", world_folder)
     test_random_agent(
         agent=agent,
         envs=envs
@@ -249,7 +251,7 @@ def random_agent_eval(world_folder):
 def agent_02_eval_single(world_folder):
     # TODO: Add description.
     envs = extract_games(world_folder)
-    results_file_name = generate_results_file_name()
+    results_file_name = generate_results_file_name("single", world_folder)
     for env in envs:
         agent = Agent02()
         train_and_test_agent_02(
@@ -263,7 +265,7 @@ def agent_02_eval_multiple(world_folder):
     # TODO: Add description.
     agent = Agent02()
     envs = extract_games(world_folder)
-    results_file_name = generate_results_file_name()
+    results_file_name = generate_results_file_name("multiple", world_folder)
     train_and_test_agent_02(
         agent=agent,
         envs=envs,
@@ -276,7 +278,7 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
     agent = Agent02()
     train_envs = extract_games(train_world_folder)
     test_envs = extract_games(test_world_folder)
-    results_file_name = generate_results_file_name()
+    results_file_name = generate_results_file_name("zero_shot", world_folder)
     train_and_test_agent_02(
         agent=agent,
         envs=train_envs,
