@@ -226,7 +226,7 @@ def extract_games(world_folder):
 def generate_results_file_name(prefix, world_folder):
     """ Generate a filename to output results to, based on the current time and date. """
     if (world_folder[:9] == "tw_games/"):
-        return prefix + "_" + world_folder[9:] + ".csv"
+        return "test_results/" + prefix + "_" + world_folder[9:] + ".csv"
     else:
         return "test_results/{}_{}.csv".format(datetime.now().date(), datetime.now().time())
 
