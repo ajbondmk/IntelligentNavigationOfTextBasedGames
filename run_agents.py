@@ -112,7 +112,7 @@ def train_and_test_agent_02(agent, envs, test_envs):
         if (epoch+1) % TEST_INTERVAL == 0:
             test_agent_02(agent=agent, envs=test_envs)
     
-    print()
+    # print()
 
 
 def test_agent_02(agent, envs):
@@ -162,7 +162,7 @@ def test_agent_02(agent, envs):
     # Add latest statistics to the agent and print to the console.
     # agent.num_moves_results.append(np.mean(num_moves))
     agent.score_results.append(np.mean(scores))
-    print("Average moves: {:.1f}, Average score: {:.1f}".format(np.mean(num_moves), np.mean(scores)))
+    # print("Average moves: {:.1f}, Average score: {:.1f}".format(np.mean(num_moves), np.mean(scores)))
 
 
 def test_random_agent(agent, envs):
@@ -212,7 +212,7 @@ def test_random_agent(agent, envs):
         # Add latest statistics to the agent and print to the console.
         # agent.num_moves_results.append(np.mean(num_moves))
         agent.score_results.append(np.mean(scores))
-        print("Game: {}, Average moves: {:.1f}, Average score: {:.1f}".format(game, np.mean(num_moves), np.mean(scores)))
+        # print("Game: {}, Average moves: {:.1f}, Average score: {:.1f}".format(game, np.mean(num_moves), np.mean(scores)))
 
 
 def extract_games(world_folder):
@@ -253,6 +253,7 @@ def agent_02_eval_single(world_folder):
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name("single", world_folder)
     for env in envs:
+        print(env) #TODO:Remove.
         agent = Agent02()
         train_and_test_agent_02(
             agent=agent,
