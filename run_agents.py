@@ -253,7 +253,7 @@ def agent_02_eval_single(world_folder):
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name("single", world_folder)
     for env in envs:
-        print(env) #TODO:Remove.
+        print("{} {} -- {}".format(datetime.now().date(), datetime.now().time(), env)) #TODO:Remove.
         agent = Agent02()
         train_and_test_agent_02(
             agent=agent,
