@@ -1,5 +1,3 @@
-from run_agents import agent_02_eval_single
+from run_agents import agent_02_eval_multiple
 
-agent_02_eval_single("tw_games/005/")
-agent_02_eval_single("tw_games/105/")
-agent_02_eval_single("tw_games/205/")
+agent_02_eval_multiple("tw_games/multiple/010_10")

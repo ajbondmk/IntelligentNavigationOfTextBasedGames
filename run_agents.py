@@ -12,7 +12,7 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 2000
+NUM_EPOCHS_AGENT_02_TRAIN = 3000
 NUM_EPOCHS_RANDOM_TEST = 100
 
 # The number of epochs between training the model.
@@ -110,6 +110,7 @@ def train_and_test_agent_02(agent, envs, test_envs):
 
         # Every TEST_INTERVAL epochs, test the agent.
         if (epoch+1) % TEST_INTERVAL == 0:
+            print("EPOCH:", epoch) #TODO:Remove.
             test_agent_02(agent=agent, envs=test_envs)
     
     # print()
@@ -162,6 +163,9 @@ def test_agent_02(agent, envs):
     # Add latest statistics to the agent and print to the console.
     # agent.num_moves_results.append(np.mean(num_moves))
     agent.score_results.append(np.mean(scores))
+    print(scores) #TODO:Remove.
+    print(np.mean(scores)) #TODO:Remove.
+    print() #TODO:Remove.
     # print("Average moves: {:.1f}, Average score: {:.1f}".format(np.mean(num_moves), np.mean(scores)))
 
 
