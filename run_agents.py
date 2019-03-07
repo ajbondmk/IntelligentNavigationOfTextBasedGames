@@ -12,7 +12,7 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 3000
+NUM_EPOCHS_AGENT_02_TRAIN = 2000
 NUM_EPOCHS_RANDOM_TEST = 100
 
 # The number of epochs between training the model.
@@ -22,7 +22,7 @@ TRAIN_INTERVAL = 4
 TEST_INTERVAL = 10
 
 
-def train_and_test_agent_02(agent, envs, test_envs):
+def train_and_test_agent_02(agent, envs, test_envs, results_file_name):
     """
     Trains an Agent02 on a set of games, testing periodically.
 
@@ -30,6 +30,7 @@ def train_and_test_agent_02(agent, envs, test_envs):
         agent - the agent being run
         envs - the list of environments to train on
         test_envs - the list of environments to test on ([] means test on training envs)
+        results_file_name - the name of the csv file to output results to
     """
 
     # Epsilon will decay from 1 to epsilon_limit_value over the first epsilon_limit_epoch epochs. then remain at epsilon_limit_value.
@@ -44,12 +45,11 @@ def train_and_test_agent_02(agent, envs, test_envs):
         test_envs = envs
 
     # Initialise the arrays of move counts and scores.
-    num_moves, scores = [], []
+    num_moves = [[] for game in range(num_games)]
+    scores = [[] for game in range(num_games)]
 
     # Initialse the global step count to 0.
     count = 0
-
-    test_agent_02(agent=agent, envs=test_envs)
 
     # Repeat each game multiple times.
     for epoch in range(NUM_EPOCHS_AGENT_02_TRAIN):
@@ -102,18 +102,14 @@ def train_and_test_agent_02(agent, envs, test_envs):
                     break
 
             # Keep track of the statistics for this game and epoch, printing to console.
-            num_moves.append(game_state.nb_moves)
-            scores.append(game_state.score)
+            num_moves[game].append(game_state.nb_moves)
+            scores[game].append(game_state.score)
 
             # Close the TextWorld environment.
             env.close()
-
-        # Every TEST_INTERVAL epochs, test the agent.
-        if (epoch+1) % TEST_INTERVAL == 0:
-            print("EPOCH:", epoch) #TODO:Remove.
-            test_agent_02(agent=agent, envs=test_envs)
     
-    # print()
+    output_to_csv(num_moves, results_file_name[:-4] + "_moves.csv")
+    output_to_csv(scores, results_file_name[:-4] + "_scores.csv")
 
 
 def test_agent_02(agent, envs):
@@ -234,10 +230,16 @@ def generate_results_file_name(experiment, world_folder):
     else:
         return "test_results/{}_{}.csv".format(datetime.now().date(), datetime.now().time())
 
+# def output_to_csv(results, results_file_name):
+#     with open(results_file_name, mode='a') as results_file:
+#         writer = csv.writer(results_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+#         writer.writerow(results)
+
 def output_to_csv(results, results_file_name):
     with open(results_file_name, mode='a') as results_file:
         writer = csv.writer(results_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(results)
+        for result_row in results:
+            writer.writerow(result_row)
 
 
 def random_agent_eval(world_folder):
@@ -262,31 +264,32 @@ def agent_02_eval_single(world_folder):
         train_and_test_agent_02(
             agent=agent,
             envs=[env],
-            test_envs=[]
+            test_envs=[],
+            results_file_name=results_file_name
         )
-        output_to_csv(agent.score_results, results_file_name)
+        # output_to_csv(agent.score_results, results_file_name)
 
-def agent_02_eval_multiple(world_folder):
-    # TODO: Add description.
-    agent = Agent02()
-    envs = extract_games(world_folder)
-    results_file_name = generate_results_file_name("multiple", world_folder)
-    train_and_test_agent_02(
-        agent=agent,
-        envs=envs,
-        test_envs=[]
-    )
-    output_to_csv(agent.score_results, results_file_name)
+# def agent_02_eval_multiple(world_folder):
+#     # TODO: Add description.
+#     agent = Agent02()
+#     envs = extract_games(world_folder)
+#     results_file_name = generate_results_file_name("multiple", world_folder)
+#     train_and_test_agent_02(
+#         agent=agent,
+#         envs=envs,
+#         test_envs=[]
+#     )
+#     output_to_csv(agent.score_results, results_file_name)
 
-def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
-    # TODO: Add description.
-    agent = Agent02()
-    train_envs = extract_games(train_world_folder)
-    test_envs = extract_games(test_world_folder)
-    results_file_name = generate_results_file_name("zero_shot", train_world_folder)
-    train_and_test_agent_02(
-        agent=agent,
-        envs=train_envs,
-        test_envs=test_envs
-    )
-    output_to_csv(agent.score_results, results_file_name)
+# def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
+#     # TODO: Add description.
+#     agent = Agent02()
+#     train_envs = extract_games(train_world_folder)
+#     test_envs = extract_games(test_world_folder)
+#     results_file_name = generate_results_file_name("zero_shot", train_world_folder)
+#     train_and_test_agent_02(
+#         agent=agent,
+#         envs=train_envs,
+#         test_envs=test_envs
+#     )
+#     output_to_csv(agent.score_results, results_file_name)
