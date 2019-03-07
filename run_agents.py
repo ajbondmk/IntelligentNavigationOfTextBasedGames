@@ -13,7 +13,7 @@ MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
 NUM_EPOCHS_AGENT_02_TRAIN = 20
-NUM_EPOCHS_RANDOM_TEST = 100
+NUM_EPOCHS_RANDOM_TEST = 10
 
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
@@ -159,24 +159,23 @@ def test_agent_02(agent, envs):
     agent.score_results_test.append(np.mean(scores))
 
 
-def test_random_agent(agent, envs, results_file_name):
+def test_random_agent(agent, envs):
     """
     Tests a RandomAgent on a set of games.
 
     Parameters:
         agent - the agent being run
         envs - the list of environments
-        results_file_name - the name of the file to output results to
     """
 
     # Number of games to be played.
     num_games = len(envs)
 
+    # Initialise the array of scores.
+    scores = []
+
     # Run each game in the world.
     for game in range(num_games):
-
-        # Initialise the arrays of move counts and scores.
-        num_moves, scores = [], []
 
         # Repeat each game multiple times.
         for epoch in range(NUM_EPOCHS_RANDOM_TEST):
@@ -197,19 +196,14 @@ def test_random_agent(agent, envs, results_file_name):
                 if done:
                     break
 
-            # Keep track of the latest statistics, printing to console.
-            num_moves.append(game_state.nb_moves)
+            # Keep track of the latest statistics.
             scores.append(game_state.score)
 
             # Close the TextWorld environment.
             env.close()
-
-        # Output results for each game to a text file.
-        with open(results_file_name,"a+") as results_file:
-            results_file.write("Game: {}\n".format(envs[game]))
-            results_file.write("Average number of moves: {}\n".format(np.mean(num_moves)))
-            results_file.write("Average reward: {}\n".format(np.mean(scores)))
-            results_file.write("\n")
+    
+    # Print the average reward over all games.
+    print("Average reward:", np.mean(scores))
 
 
 def extract_games(world_folder):
@@ -252,11 +246,9 @@ def random_agent_eval(world_folder):
     #TODO: Add description.
     agent = RandomAgent()
     envs = extract_games(world_folder)
-    results_file_name = generate_results_file_name(world_folder) + ".txt"
     test_random_agent(
         agent=agent,
-        envs=envs,
-        results_file_name=results_file_name
+        envs=envs
     )
 
 
