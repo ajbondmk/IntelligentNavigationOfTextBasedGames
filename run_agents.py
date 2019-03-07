@@ -2,7 +2,7 @@ import os
 import numpy as np
 import textworld
 import csv
-from datetime import datetime
+from datetime import datetime #TODO:Remove.
 from agent_02 import Agent02
 from random_agent import RandomAgent
 
