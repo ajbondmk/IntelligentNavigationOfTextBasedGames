@@ -108,8 +108,8 @@ def train_and_test_agent_02(agent, envs, test_envs, results_file_name):
             # Close the TextWorld environment.
             env.close()
     
-    output_to_csv(num_moves, results_file_name[:-4] + "_moves.csv")
-    output_to_csv(scores, results_file_name[:-4] + "_scores.csv")
+    output_to_csv(num_moves, results_file_name[:-3] + "_moves.csv")
+    output_to_csv(scores, results_file_name[:-3] + "_scores.csv")
 
 
 def test_agent_02(agent, envs):
