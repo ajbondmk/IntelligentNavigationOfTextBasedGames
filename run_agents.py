@@ -12,7 +12,7 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 20
+NUM_EPOCHS_AGENT_02_TRAIN = 2000
 NUM_EPOCHS_RANDOM_TEST = 10
 
 # The number of epochs between training the model.
