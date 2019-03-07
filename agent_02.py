@@ -59,8 +59,10 @@ class Agent02(textworld.Agent):
         self.epsilon = 0.1
 
         # Initialise variables to track test results.
-        # self.num_moves_results = []
+        self.num_moves_results = []
         self.score_results = []
+        self.num_moves_results_test = []
+        self.score_results_test = []
 
 
     def set_epsilon(self, epsilon):
