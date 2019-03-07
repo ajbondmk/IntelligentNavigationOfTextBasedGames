@@ -18,9 +18,6 @@ NUM_EPOCHS_RANDOM_TEST = 10
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
 
-# The number of epochs between testing the agent (during training).
-TEST_INTERVAL = 10
-
 
 def train_and_test_agent_02(agent, envs, test_envs):
     """
