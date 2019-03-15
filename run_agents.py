@@ -291,6 +291,12 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folders):
     test_envs_list.append(extract_games("tw_games/zero_shot/test/015"))
     test_envs_list.append(extract_games("tw_games/zero_shot/test/025"))
     results_file_name = "test_results/zero_shot/005"
+    agent.num_moves_results_test.append([])
+    agent.num_moves_results_test.append([])
+    agent.num_moves_results_test.append([])
+    agent.score_results_test.append([])
+    agent.score_results_test.append([])
+    agent.score_results_test.append([])
 
     train_and_test_agent_02(
         agent=agent,
