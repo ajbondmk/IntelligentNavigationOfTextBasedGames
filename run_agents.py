@@ -113,24 +113,22 @@ def test_agent_02(agent, test_sets):
 
     Parameters:
         agent - the agent being run
-        envs - the list of environments
+        test_sets - the list of environments
     """
 
     # Set the value of epsilon for testing.
     agent.set_epsilon(0) #TODO: Should this be 0.2?
 
-    for i in range(test_sets):
-
-        test_set = test_sets[i]
+    for i in range(len(test_sets)):
 
         # Initialise the arrays of move counts and scores.
         num_moves, scores = [], []
 
         # Run each game in the set of input games.
-        for j in range(len(envs)):
+        for j in range(len(test_sets[i])):
 
             # Create a TextWorld environment and game state for the game.
-            env = textworld.start(envs[i][j])
+            env = textworld.start(test_sets[i][j])
             env.enable_extra_info("description")
             game_state = env.reset()
 
