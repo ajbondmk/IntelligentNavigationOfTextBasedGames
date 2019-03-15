@@ -1,3 +1,3 @@
-from run_agents import agent_02_eval_single
+from run_agents import agent_02_eval_zero_shot
 
-agent_02_eval_single("tw_games/single/015_1-10")
+agent_02_eval_zero_shot("tmp", "tmp")

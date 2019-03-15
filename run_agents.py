@@ -12,21 +12,21 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 2000
+NUM_EPOCHS_AGENT_02_TRAIN = 3000
 NUM_EPOCHS_RANDOM_TEST = 10
 
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
 
 
-def train_and_test_agent_02(agent, envs, test_envs):
+def train_and_test_agent_02(agent, envs, test_envs_list):
     """
     Trains an Agent02 on a set of games.
 
     Parameters:
         agent - the agent being run
         envs - the list of environments to train on
-        test_envs - the list of environments to test on (zero shot evaluation)
+        test_envs_list - the list of lists of environments to test on (zero shot evaluation)
     """
 
     # Epsilon will decay from 1 to epsilon_limit_value over the first epsilon_limit_epoch epochs. then remain at epsilon_limit_value.
@@ -103,11 +103,11 @@ def train_and_test_agent_02(agent, envs, test_envs):
         agent.score_results.append(np.mean(scores))
         
         # If no test environments are passed in, test on the training environments.
-        if test_envs != []:
-            test_agent_02(agent=agent, envs=test_envs)
+        if test_envs_list != []:
+            test_agent_02(agent=agent, test_sets=test_envs_list)
 
 
-def test_agent_02(agent, envs):
+def test_agent_02(agent, test_sets):
     """
     Tests an Agent02 on a set of games.
 
@@ -119,41 +119,42 @@ def test_agent_02(agent, envs):
     # Set the value of epsilon for testing.
     agent.set_epsilon(0) #TODO: Should this be 0.2?
 
-    # Number of games to be played.
-    num_games = len(envs)
+    for i in range(test_sets):
 
-    # Initialise the arrays of move counts and scores.
-    num_moves, scores = [], []
+        test_set = test_sets[i]
 
-    # Run each game in the set of input games.
-    for game in range(num_games):
+        # Initialise the arrays of move counts and scores.
+        num_moves, scores = [], []
 
-        # Create a TextWorld environment and game state for the game.
-        env = textworld.start(envs[game])
-        env.enable_extra_info("description")
-        game_state = env.reset()
+        # Run each game in the set of input games.
+        for j in range(len(envs)):
 
-        # Allow the agent to perform up to MAX_MOVES_TEST actions.
-        for _ in range(MAX_MOVES_TEST):
-        
-            # Perform the action chosen by the agent.
-            action = agent.act(game_state)
-            game_state, _, done = env.step(action)
+            # Create a TextWorld environment and game state for the game.
+            env = textworld.start(envs[i][j])
+            env.enable_extra_info("description")
+            game_state = env.reset()
 
-            # If the game is finished (completed), break.
-            if done:
-                break
+            # Allow the agent to perform up to MAX_MOVES_TEST actions.
+            for _ in range(MAX_MOVES_TEST):
+            
+                # Perform the action chosen by the agent.
+                action = agent.act(game_state)
+                game_state, _, done = env.step(action)
 
-        # Keep track of the latest statistics.
-        num_moves.append(game_state.nb_moves)
-        scores.append(game_state.score)
+                # If the game is finished (completed), break.
+                if done:
+                    break
 
-        # Close the TextWorld environment.
-        env.close()
+            # Keep track of the latest statistics.
+            num_moves.append(game_state.nb_moves)
+            scores.append(game_state.score)
 
-    # Add latest statistics to the agent.
-    agent.num_moves_results_test.append(np.mean(num_moves))
-    agent.score_results_test.append(np.mean(scores))
+            # Close the TextWorld environment.
+            env.close()
+
+        # Add latest statistics to the agent.
+        agent.num_moves_results_test[i].append(np.mean(num_moves))
+        agent.score_results_test[i].append(np.mean(scores))
 
 
 def test_random_agent(agent, envs):
@@ -229,9 +230,11 @@ def output_to_csvs(agent, results_file_name):
     output_to_csv(agent.num_moves_results, results_file_name + "_moves.csv")
     output_to_csv(agent.score_results, results_file_name + "_scores.csv")
     if agent.num_moves_results_test:
-        output_to_csv(agent.num_moves_results_test, results_file_name + "_test-moves.csv")
+        for line in agent.num_moves_results_test:
+            output_to_csv(line, results_file_name + "_test-moves.csv")
     if agent.score_results_test:
-        output_to_csv(agent.score_results_test, results_file_name + "_test-scores.csv")
+        for line in agent.score_results_test:
+            output_to_csv(line, results_file_name + "_test-scores.csv")
 
 def output_to_csv(results, results_file_name):
     with open(results_file_name, mode='a') as results_file:
@@ -259,7 +262,7 @@ def agent_02_eval_single(world_folder):
         train_and_test_agent_02(
             agent=agent,
             envs=[env],
-            test_envs=[]
+            test_envs_list=[]
         )
         output_to_csvs(agent, results_file_name)
 
@@ -271,19 +274,29 @@ def agent_02_eval_multiple(world_folder):
     train_and_test_agent_02(
         agent=agent,
         envs=envs,
-        test_envs=[]
+        test_envs_list=[]
     )
     output_to_csvs(agent, results_file_name)
 
-def agent_02_eval_zero_shot(train_world_folder, test_world_folder):
+def agent_02_eval_zero_shot(train_world_folder, test_world_folders):
     # TODO: Add description.
     agent = Agent02()
-    train_envs = extract_games(train_world_folder)
-    test_envs = extract_games(test_world_folder)
-    results_file_name = generate_results_file_name(train_world_folder)
+
+    # train_envs = extract_games(train_world_folder)
+    # test_envs_list = []
+    # for i in range(test_world_folders):
+    #     test_envs_list[i] = extract_games(test_world_folders[i])
+    # results_file_name = generate_results_file_name(train_world_folder)
+    train_envs = extract_games("tw_games/zero_shot/train/010_005")
+    test_envs_list = []
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/005"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/015"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/025"))
+    results_file_name = "test_results/zero_shot/005"
+
     train_and_test_agent_02(
         agent=agent,
         envs=train_envs,
-        test_envs=test_envs
+        test_envs_list=test_envs_list
     )
     output_to_csvs(agent, results_file_name)
