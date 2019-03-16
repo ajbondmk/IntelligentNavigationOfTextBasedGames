@@ -117,7 +117,7 @@ def test_agent_02(agent, test_sets):
     """
 
     # Set the value of epsilon for testing.
-    agent.set_epsilon(0) #TODO: Should this be 0.2?
+    agent.set_epsilon(0)
 
     for i in range(len(test_sets)):
 
