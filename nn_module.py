@@ -1,22 +1,24 @@
+""" File containing the Model for Agent02. """
+
+
 import torch
 import torch.nn as nn
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class Model(nn.Module):
     """ The neural network model used by Agent02. """
 
 
-    def __init__(self, vocab_size, num_words, num_actions):
+    def __init__(self, vocab_size, num_actions):
         """
         Initialise the model: Embedding, then LSTM, then Linear.
             vocab_size = number of possible words
-            num_words = number of words in each input
             num_actions = number of actions
         """
-        
+
         super(Model, self).__init__()
 
         embedding_dim = 20
@@ -33,11 +35,14 @@ class Model(nn.Module):
 
     def init_hidden(self, batch_size):
         """ Initialise the hidden layer to all zeros. """
-        self.hidden = (torch.zeros(1, batch_size, self.hidden_dim).to(device),
-                torch.zeros(1, batch_size, self.hidden_dim).to(device))
+        self.hidden = (
+            torch.zeros(1, batch_size, self.hidden_dim).to(DEVICE),
+            torch.zeros(1, batch_size, self.hidden_dim).to(DEVICE)
+        )
 
 
     def init_weights(self):
+        """ Initialise the weights in the network. """
         for linear in [self.word_embeddings, self.linear_1, self.linear_2]:
             torch.nn.init.xavier_uniform_(linear.weight.data)
             linear.bias.data.fill_(0.0)
@@ -57,8 +62,8 @@ class Model(nn.Module):
         """ Make a forward pass through the network, returning the final values. """
         embeddings = self.word_embeddings(batch)
         lstm_out, self.hidden = self.lstm(embeddings, self.hidden)
-        # lstm_out_final = torch.stack([lstm_out[i,lengths[i]-1] for i in range(len(batch))])
-        lstm_out_final = torch.stack([torch.mean(lstm_out[i].narrow(0,0,lengths[i]),0) for i in range(len(batch))])
+        lstm_out_final = torch.stack(
+            [torch.mean(lstm_out[i].narrow(0, 0, lengths[i]), 0) for i in range(len(batch))])
         intermediate = self.linear_1(lstm_out_final)
         intermediate = self.relu(intermediate)
         actions = self.linear_2(intermediate)

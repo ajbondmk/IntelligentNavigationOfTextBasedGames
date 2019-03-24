@@ -1,8 +1,10 @@
+""" File containing code to train and test agents by performing experiments. """
+
+
 import os
+import csv
 import numpy as np
 import textworld
-import csv
-from datetime import datetime #TODO:Remove.
 from agent_02 import Agent02
 from random_agent import RandomAgent
 
@@ -29,7 +31,8 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
         test_envs_list - the list of lists of environments to test on (zero shot evaluation)
     """
 
-    # Epsilon will decay from 1 to epsilon_limit_value over the first epsilon_limit_epoch epochs. then remain at epsilon_limit_value.
+    # Epsilon will decay from 1 to epsilon_limit_value over the first epsilon_limit_epoch epochs,
+    # then remain at epsilon_limit_value.
     epsilon_limit_value = 0.2
     epsilon_limit_epoch = 1000
 
@@ -54,7 +57,8 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
 
             # Update epsilon.
             if epoch < epsilon_limit_epoch - 1:
-                agent.set_epsilon(1 - ((1 - epsilon_limit_value) * (epoch / (epsilon_limit_epoch - 2))))
+                agent.set_epsilon(
+                    1 - ((1 - epsilon_limit_value) * (epoch / (epsilon_limit_epoch - 2))))
             elif epoch == epsilon_limit_epoch - 1:
                 agent.set_epsilon(epsilon_limit_value)
 
@@ -64,21 +68,22 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
 
             # Allow the agent to perform up to MAX_MOVES_TRAIN actions.
             for _ in range(MAX_MOVES_TRAIN):
-            
+
                 # Perform the action chosen by the agent.
                 action = agent.act(game_state)
                 game_state, reward, done = env.step(action)
-                
+
                 # Update the local state variables.
                 state_before = state_after
                 state_after = game_state.description
 
-                # Give a reward of 1 point if the agent picked up the coin or discovered a new room, and 0 points otherwise.
+                # Give a reward of 1 point if the agent picked up the coin or discovered a new room,
+                # and 0 points otherwise.
                 if reward is 0:
                     if state_after not in inputs_seen:
                         reward += 1
                         inputs_seen.append(state_after)
-            
+
                 # Add the transition to memory.
                 agent.memory.add_item(state_before, action, state_after, reward)
 
@@ -97,11 +102,11 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
 
             # Close the TextWorld environment.
             env.close()
-	
+
         # Add latest statistics to the agent.
         agent.num_moves_results.append(np.mean(num_moves))
         agent.score_results.append(np.mean(scores))
-        
+
         # If no test environments are passed in, test on the training environments.
         if test_envs_list != []:
             test_agent_02(agent=agent, test_sets=test_envs_list)
@@ -134,7 +139,7 @@ def test_agent_02(agent, test_sets):
 
             # Allow the agent to perform up to MAX_MOVES_TEST actions.
             for _ in range(MAX_MOVES_TEST):
-            
+
                 # Perform the action chosen by the agent.
                 action = agent.act(game_state)
                 game_state, _, done = env.step(action)
@@ -174,7 +179,7 @@ def test_random_agent(agent, envs):
     for game in range(num_games):
 
         # Repeat each game multiple times.
-        for epoch in range(NUM_EPOCHS_RANDOM_TEST):
+        for _ in range(NUM_EPOCHS_RANDOM_TEST):
 
             # Create a TextWorld environment and game state for the game.
             env = textworld.start(envs[game])
@@ -183,9 +188,9 @@ def test_random_agent(agent, envs):
 
             # Allow the agent to perform up to MAX_MOVES_TEST actions.
             for _ in range(MAX_MOVES_TEST):
-            
+
                 # Perform the action chosen by the agent.
-                action = agent.act(game_state)
+                action = agent.act()
                 game_state, _, done = env.step(action)
 
                 # If the game is finished (completed), break.
@@ -197,7 +202,7 @@ def test_random_agent(agent, envs):
 
             # Close the TextWorld environment.
             env.close()
-    
+
     # Print the average reward over all games.
     print("Average reward:", np.mean(scores))
 
@@ -214,8 +219,8 @@ def extract_games(world_folder):
 def generate_results_file_name(world_folder):
     """ Generate a filename to output results to, with no file extension. """
     name = world_folder
-    if (world_folder[:9] == "tw_games/"):
-        if (world_folder[-1:] == "/"):
+    if world_folder[:9] == "tw_games/":
+        if world_folder[-1:] == "/":
             name = world_folder[9:-1]
         else:
             name = world_folder[9:]
@@ -225,6 +230,7 @@ def generate_results_file_name(world_folder):
 
 
 def output_to_csvs(agent, results_file_name):
+    """ Output all training/testing data to CSV files. """
     output_to_csv(agent.num_moves_results, results_file_name + "_moves.csv")
     output_to_csv(agent.score_results, results_file_name + "_scores.csv")
     if agent.num_moves_results_test:
@@ -235,6 +241,7 @@ def output_to_csvs(agent, results_file_name):
             output_to_csv(line, results_file_name + "_test-scores.csv")
 
 def output_to_csv(results, results_file_name):
+    """ Output a line to a CSV file. """
     with open(results_file_name, mode='a') as results_file:
         writer = csv.writer(results_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(results)
@@ -255,7 +262,6 @@ def agent_02_eval_single(world_folder):
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name(world_folder)
     for env in envs:
-        print("{} {} -- {}".format(datetime.now().date(), datetime.now().time(), env)) #TODO:Remove.
         agent = Agent02()
         train_and_test_agent_02(
             agent=agent,

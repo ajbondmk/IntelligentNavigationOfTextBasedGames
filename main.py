@@ -1,7 +1,13 @@
-import sys
-import os
+"""
+The CLI for running experiments to train and/or test agents on TextWorld Coin Collector games.
+"""
+
+
 import click
-from run_agents import random_agent_eval, agent_02_eval_single, agent_02_eval_multiple, agent_02_eval_zero_shot
+from run_agents import random_agent_eval
+from run_agents import agent_02_eval_single
+from run_agents import agent_02_eval_multiple
+from run_agents import agent_02_eval_zero_shot
 
 
 try:
