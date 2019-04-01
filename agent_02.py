@@ -1,4 +1,4 @@
-""" File containing Agent02. """
+""" File containing DQNAgent. """
 
 
 import random
@@ -15,7 +15,7 @@ from replay_memory import PriorityReplayMemory
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-class Agent02(textworld.Agent):
+class DQNAgent(textworld.Agent):
     """ Agent that uses an epsilon-greedy policy and a neural network model to select actions. """
 
 

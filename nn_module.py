@@ -1,4 +1,4 @@
-""" File containing the Model for Agent02. """
+""" File containing the Model for DQNAgent. """
 
 
 import torch
@@ -9,7 +9,7 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class Model(nn.Module):
-    """ The neural network model used by Agent02. """
+    """ The neural network model used by DQNAgent. """
 
 
     def __init__(self, vocab_size, num_actions):

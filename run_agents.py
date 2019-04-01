@@ -5,7 +5,7 @@ import os
 import csv
 import numpy as np
 import textworld
-from agent_02 import Agent02
+from dqn_agent import DQNAgent
 from random_agent import RandomAgent
 
 
@@ -14,16 +14,16 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_AGENT_02_TRAIN = 3000
+NUM_EPOCHS_DQN_AGENT_TRAIN = 3000
 NUM_EPOCHS_RANDOM_TEST = 10
 
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
 
 
-def train_and_test_agent_02(agent, envs, test_envs_list):
+def train_and_test_dqn_agent(agent, envs, test_envs_list):
     """
-    Trains an Agent02 on a set of games.
+    Trains a DQNAgent on a set of games.
 
     Parameters:
         agent - the agent being run
@@ -43,7 +43,7 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
     count = 0
 
     # Repeat each game multiple times.
-    for epoch in range(NUM_EPOCHS_AGENT_02_TRAIN):
+    for epoch in range(NUM_EPOCHS_DQN_AGENT_TRAIN):
 
         num_moves, scores = [], []
 
@@ -109,12 +109,12 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
 
         # If no test environments are passed in, test on the training environments.
         if test_envs_list != []:
-            test_agent_02(agent=agent, test_sets=test_envs_list)
+            test_dqn_agent(agent=agent, test_sets=test_envs_list)
 
 
-def test_agent_02(agent, test_sets):
+def test_dqn_agent(agent, test_sets):
     """
-    Tests an Agent02 on a set of games.
+    Tests a DQNAgent on a set of games.
 
     Parameters:
         agent - the agent being run
@@ -257,34 +257,34 @@ def random_agent_eval(world_folder):
     )
 
 
-def agent_02_eval_single(world_folder):
+def dqn_agent_eval_single(world_folder):
     # TODO: Add description.
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name(world_folder)
     for env in envs:
-        agent = Agent02()
-        train_and_test_agent_02(
+        agent = DQNAgent()
+        train_and_test_dqn_agent(
             agent=agent,
             envs=[env],
             test_envs_list=[]
         )
         output_to_csvs(agent, results_file_name)
 
-def agent_02_eval_multiple(world_folder):
+def dqn_agent_eval_multiple(world_folder):
     # TODO: Add description.
-    agent = Agent02()
+    agent = DQNAgent()
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name(world_folder)
-    train_and_test_agent_02(
+    train_and_test_dqn_agent(
         agent=agent,
         envs=envs,
         test_envs_list=[]
     )
     output_to_csvs(agent, results_file_name)
 
-def agent_02_eval_zero_shot(train_world_folder, test_world_folders):
+def dqn_agent_eval_zero_shot(train_world_folder, test_world_folders):
     # TODO: Add description.
-    agent = Agent02()
+    agent = DQNAgent()
 
     # train_envs = extract_games(train_world_folder)
     # test_envs_list = []
@@ -304,7 +304,7 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folders):
     agent.score_results_test.append([])
     agent.score_results_test.append([])
 
-    train_and_test_agent_02(
+    train_and_test_dqn_agent(
         agent=agent,
         envs=train_envs,
         test_envs_list=test_envs_list

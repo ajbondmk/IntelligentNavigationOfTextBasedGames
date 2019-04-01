@@ -1,4 +1,4 @@
-""" File containing information to do with the memory of Agent02. """
+""" File containing information to do with the memory of DQNAgent. """
 
 
 import random
