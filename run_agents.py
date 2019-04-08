@@ -194,7 +194,7 @@ def test_random_agent(agent, envs):
             for _ in range(MAX_MOVES_TEST):
 
                 # Perform the action chosen by the agent.
-                action = agent.act()
+                action = agent.act(game_state)
                 game_state, _, done = env.step(action)
 
                 # If the game is finished (completed), break.
