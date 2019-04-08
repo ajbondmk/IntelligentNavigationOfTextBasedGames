@@ -101,9 +101,10 @@ def train_and_test_agent_02(agent, envs, test_envs_list):
         # Add latest statistics to the agent.
         agent.num_moves_results.append(np.mean(num_moves))
         agent.score_results.append(np.mean(scores))
-        
+
         # If no test environments are passed in, test on the training environments.
         if test_envs_list != []:
+            # print("EPOCH:", epoch)
             test_agent_02(agent=agent, test_sets=test_envs_list)
 
 
@@ -153,6 +154,9 @@ def test_agent_02(agent, test_sets):
         # Add latest statistics to the agent.
         agent.num_moves_results_test[i].append(np.mean(num_moves))
         agent.score_results_test[i].append(np.mean(scores))
+        # print("SCORES:", np.mean(scores))
+
+    # print("")
 
 
 def test_random_agent(agent, envs):
@@ -285,11 +289,11 @@ def agent_02_eval_zero_shot(train_world_folder, test_world_folders):
     # for i in range(test_world_folders):
     #     test_envs_list[i] = extract_games(test_world_folders[i])
     # results_file_name = generate_results_file_name(train_world_folder)
-    train_envs = extract_games("tw_games/zero_shot/train/010_005")
+    train_envs = extract_games("tw_games/zero_shot/train/010_005/")
     test_envs_list = []
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/005"))
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/015"))
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/025"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/005/"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/015/"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/025/"))
     results_file_name = "test_results/zero_shot/005"
     agent.num_moves_results_test.append([])
     agent.num_moves_results_test.append([])
