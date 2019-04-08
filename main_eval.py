@@ -1,3 +1,5 @@
-from run_agents import agent_02_eval_zero_shot
+from run_agents import dqn_agent_eval_zero_shot
 
-agent_02_eval_zero_shot("tmp", "tmp")
+dqn_agent_eval_zero_shot("tmp", "tmp")
+
+# TODO: DELETE THIS FILE

@@ -1,9 +1,13 @@
+""" File containing information to do with the memory of DQNAgent. """
+
+
 import random
 from collections import namedtuple
 
 
 
-# An object which represents a transition from one state to the next_state, via an action, and receiving a reward.
+# An object which represents a transition from one state to the next_state, via an action,
+# and receiving a reward.
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
 
@@ -24,7 +28,8 @@ class PriorityReplayMemory:
         self.priority_batch_size = round(batch_size * priority_fraction)
         self.non_priority_batch_size = batch_size - self.priority_batch_size
         self.priority_memory = ReplayMemory(priority_max_length, self.priority_batch_size)
-        self.non_priority_memory = ReplayMemory(non_priority_max_length, self.non_priority_batch_size)
+        self.non_priority_memory = ReplayMemory(
+            non_priority_max_length, self.non_priority_batch_size)
 
 
     def add_item(self, *item):
@@ -37,37 +42,33 @@ class PriorityReplayMemory:
 
     def get_batch(self):
         """
-        If memory contains enough transitions, select a random batch of them from each memory (proportionate to priority_fraction) and merge them.
+        If memory contains enough transitions, select a random batch of them from each memory
+        (proportionate to priority_fraction) and merge them.
         Instead of returning a batch of transitions, return a transition of batches.
         """
         priority_batch = self.priority_memory.get_batch()
         non_priority_batch = self.non_priority_memory.get_batch()
-        
+
         if priority_batch is None or non_priority_batch is None:
             return None
-        
-        # TODO: Is this way better (all non_priority then all priority)?
-        # Create a new Transition of batches, concatenating non_priority and priority batches.
-        # states = (*non_priority_batch.state, *priority_batch.state)
-        # actions = (*non_priority_batch.action, *priority_batch.action)
-        # next_states = (*non_priority_batch.next_state, *priority_batch.next_state)
-        # rewards = (*non_priority_batch.reward, *priority_batch.reward)
-        # return Transition(states, actions, next_states, rewards)
 
-        # For each state in a Transition, arrange batch items into a tuple according to random_order, where random_order indexes across both priority and non_priority batches. Use these new tuples (one for each state in a Transition) to form a new Transition of batches.
+        # For each state in a Transition, arrange batch items into a tuple according to
+        # random_order where random_order indexes across both priority and non_priority batches.
+        # Use these new tuples (one for each state in a Transition) to form a new Transition
+        # of batches.
         random_order = list(range(self.batch_size))
         random.shuffle(random_order)
         return Transition(*map(
-            lambda i : tuple(map(
-                lambda j : non_priority_batch[i][j]
+            lambda i: tuple(map(
+                lambda j: non_priority_batch[i][j]
                 if j < self.non_priority_batch_size
                 else priority_batch[i][j - self.non_priority_batch_size],
-            random_order)),
-        range(4)))
-    
+                random_order)),
+            range(4)))
 
 
-class ReplayMemory(object):
+
+class ReplayMemory:
     """ A fixed-length memory which stores the latest transitions. """
 
 

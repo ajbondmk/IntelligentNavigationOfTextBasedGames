@@ -1,6 +1,8 @@
-import numpy as np
-import textworld
+""" File containing RandomAgent. """
+
+
 import random
+import textworld
 
 
 class RandomAgent(textworld.Agent):
@@ -15,6 +17,6 @@ class RandomAgent(textworld.Agent):
     score_results = []
 
 
-    def act(self, game_state):
+    def act(self):
         """ Choose a random action. """
         return random.choice(self.actions)
