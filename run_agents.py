@@ -299,7 +299,7 @@ def dqn_agent_eval_zero_shot(train_world_folder, test_world_folders):
     test_envs_list = []
     test_envs_list.append(extract_games("tw_games/zero_shot/test/005/"))
     test_envs_list.append(extract_games("tw_games/zero_shot/test/015/"))
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/025/"))
+    test_envs_list.append(extract_games("tw_games/zero_shot/test/030/"))
     results_file_name = "test_results/zero_shot/005"
     agent.num_moves_results_test.append([])
     agent.num_moves_results_test.append([])
