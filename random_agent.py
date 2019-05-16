@@ -13,7 +13,6 @@ class RandomAgent(textworld.Agent):
     actions = ['go north', 'go east', 'go south', 'go west', 'take coin']
 
     # Initialise variables to track test results.
-    # self.num_moves_results = []
     score_results = []
 
 

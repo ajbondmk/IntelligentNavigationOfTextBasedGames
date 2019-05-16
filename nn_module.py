@@ -14,7 +14,7 @@ class Model(nn.Module):
 
     def __init__(self, vocab_size, num_actions):
         """
-        Initialise the model: Embedding, then LSTM, then Linear.
+        Initialise the model.
             vocab_size = number of possible words
             num_actions = number of actions
         """

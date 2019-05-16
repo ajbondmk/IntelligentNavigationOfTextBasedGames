@@ -14,19 +14,22 @@ MAX_MOVES_TRAIN = 50
 MAX_MOVES_TEST = 200
 
 # The number of times each game is repeated.
-NUM_EPOCHS_DQN_AGENT_TRAIN = 3000
-NUM_EPOCHS_RANDOM_TEST = 10
+NUM_EPOCHS_TRAIN_SINGLE = 2000
+NUM_EPOCHS_TRAIN_MULTIPLE = 2000
+NUM_EPOCHS_TRAIN_ZERO_SHOT = 3000
+NUM_EPOCHS_TEST_RANDOM = 10
 
 # The number of epochs between training the model.
 TRAIN_INTERVAL = 4
 
 
-def train_and_test_dqn_agent(agent, envs, test_envs_list):
+def train_and_test_dqn_agent(agent, num_epochs, envs, test_envs_list):
     """
     Trains a DQNAgent on a set of games.
 
     Parameters:
         agent - the agent being run
+        num_epochs - the number of epochs to train for
         envs - the list of environments to train on
         test_envs_list - the list of lists of environments to test on (zero shot evaluation)
     """
@@ -39,11 +42,11 @@ def train_and_test_dqn_agent(agent, envs, test_envs_list):
     # Number of different games to be played.
     num_games = len(envs)
 
-    # Initialse the global step count to 0.
+    # Initialise the global step count to 0.
     count = 0
 
     # Repeat each game multiple times.
-    for epoch in range(NUM_EPOCHS_DQN_AGENT_TRAIN):
+    for epoch in range(num_epochs):
 
         num_moves, scores = [], []
 
@@ -109,7 +112,6 @@ def train_and_test_dqn_agent(agent, envs, test_envs_list):
 
         # If no test environments are passed in, test on the training environments.
         if test_envs_list != []:
-            # print("EPOCH:", epoch)
             test_dqn_agent(agent=agent, test_sets=test_envs_list)
 
 
@@ -159,9 +161,6 @@ def test_dqn_agent(agent, test_sets):
         # Add latest statistics to the agent.
         agent.num_moves_results_test[i].append(np.mean(num_moves))
         agent.score_results_test[i].append(np.mean(scores))
-        # print("SCORES:", np.mean(scores))
-
-    # print("")
 
 
 def test_random_agent(agent, envs):
@@ -183,7 +182,7 @@ def test_random_agent(agent, envs):
     for game in range(num_games):
 
         # Repeat each game multiple times.
-        for _ in range(NUM_EPOCHS_RANDOM_TEST):
+        for _ in range(NUM_EPOCHS_TEST_RANDOM):
 
             # Create a TextWorld environment and game state for the game.
             env = textworld.start(envs[game])
@@ -252,7 +251,7 @@ def output_to_csv(results, results_file_name):
 
 
 def random_agent_eval(world_folder):
-    #TODO: Add description.
+    """ Test the RandomAgent on the games in world_folder. """
     agent = RandomAgent()
     envs = extract_games(world_folder)
     test_random_agent(
@@ -262,54 +261,53 @@ def random_agent_eval(world_folder):
 
 
 def dqn_agent_eval_single(world_folder):
-    # TODO: Add description.
+    """
+    Train the DQNAgent on each game in world_folder individually, 
+    outputting results to CSV files.
+    """
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name(world_folder)
     for env in envs:
         agent = DQNAgent()
         train_and_test_dqn_agent(
             agent=agent,
+            num_epochs=NUM_EPOCHS_TRAIN_SINGLE,
             envs=[env],
             test_envs_list=[]
         )
         output_to_csvs(agent, results_file_name)
 
 def dqn_agent_eval_multiple(world_folder):
-    # TODO: Add description.
+    """
+    Train the DQNAgent on all of the games in world_folder,
+    outputting results to CSV files.
+    """
     agent = DQNAgent()
     envs = extract_games(world_folder)
     results_file_name = generate_results_file_name(world_folder)
     train_and_test_dqn_agent(
         agent=agent,
+        num_epochs=NUM_EPOCHS_TRAIN_MULTIPLE,
         envs=envs,
         test_envs_list=[]
     )
     output_to_csvs(agent, results_file_name)
 
 def dqn_agent_eval_zero_shot(train_world_folder, test_world_folders):
-    # TODO: Add description.
+    """
+    Train the DQNAgent on all of the games in train_world_folder.
+    Throughout training, test the agent on each set of games in test_world_folders.
+    Output results to CSV files.
+    """
     agent = DQNAgent()
-
-    # train_envs = extract_games(train_world_folder)
-    # test_envs_list = []
-    # for i in range(test_world_folders):
-    #     test_envs_list[i] = extract_games(test_world_folders[i])
-    # results_file_name = generate_results_file_name(train_world_folder)
-    train_envs = extract_games("tw_games/zero_shot/train/010_005/")
+    train_envs = extract_games(train_world_folder)
     test_envs_list = []
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/005/"))
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/015/"))
-    test_envs_list.append(extract_games("tw_games/zero_shot/test/030/"))
-    results_file_name = "test_results/zero_shot/005"
-    agent.num_moves_results_test.append([])
-    agent.num_moves_results_test.append([])
-    agent.num_moves_results_test.append([])
-    agent.score_results_test.append([])
-    agent.score_results_test.append([])
-    agent.score_results_test.append([])
-
+    for i in range(test_world_folders):
+        test_envs_list[i] = extract_games(test_world_folders[i])
+    results_file_name = generate_results_file_name(train_world_folder)
     train_and_test_dqn_agent(
         agent=agent,
+        num_epochs=NUM_EPOCHS_TRAIN_ZERO_SHOT,
         envs=train_envs,
         test_envs_list=test_envs_list
     )
